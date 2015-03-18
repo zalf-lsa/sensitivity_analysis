@@ -1,0 +1,25 @@
+;;min;max;nom
+1;pc_MaxAssimilationRate;30;70;55
+8;pc_RootFormFactor;1;6;3
+10;pc_NConcentrationRoot;0.001;0.05;0.02
+12;pc_MinimumAvailableN;0.0004;0.0009;0.00075
+14;pc_CanopyReflectionCoefficient;0.05;0.1;0.08
+21;pc_MaintenanceRespirationParameter1;0.07;0.09;0.08
+22;pc_MaintenanceRespirationParameter2;43;45;44
+23;pc_GrowthRespirationParameter1;0.09;0.11;0.1
+24;pc_GrowthRespirationParameter2;37;39;38
+26;pc_MinimumNConcentration;0.004;0.006;0.005
+27;pc_NConcentrationB0;0;3;2
+28;pc_NConcentrationPN;1.00E+000;3;1.6
+$60_1$ ;pc_StageTemperatureSum1;50;250;108
+$60_2$ ;pc_StageTemperatureSum2;200;400;284
+$60_3$ ;pc_StageTemperatureSum3;300;500;380
+$60_4$ ;pc_StageTemperatureSum4;50;200;120
+$60_5$ ;pc_StageTemperatureSum5;100;300;200
+$61_1$;pc_StageKcFactor1;0.1;0.8;0.4
+$63_2$;pc_VernalisationRequirement2;0.001;100;33
+$64_2$;pc_DaylengthRequirement2;16;24;20
+$64_3$;pc_DaylengthRequirement3;16;24;20
+$65_1$;pc_SpecificLeafArea1;0.0015;0.0025;0.002
+$65_2$;pc_SpecificLeafArea2;0.0014;0.0024;0.0019
+$65_3$;pc_SpecificLeafArea3;0.0013;0.0023;0.0018

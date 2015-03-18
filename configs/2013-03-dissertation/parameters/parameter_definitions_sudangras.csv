@@ -1,0 +1,102 @@
+;;min;max;18
+1;pc_MaxAssimilationRate;80;140;120
+2;pc_MaxCropDiameter;0.01;0.05;0.025
+3;pc_PlantDensity;5;15;10
+4;pc_RootPenetrationRate;0.0008;0.002;0.0014
+5;pc_RootGrowthLag;-60;0;-30
+6;pc_InitialRootingDepth;0.1;0.3;0.1
+7;pc_CropSpecificMaxRootingDepth;0.8;2;1.4
+8;pc_RootFormFactor;2;4;3
+9;pc_MinimumNConcentrationRoot;0.004;0.006;0.005
+10;pc_NConcentrationRoot;0.01;0.05;0.02
+11;pc_MaxNUptakeParam;3;10;7.4
+12;pc_MinimumAvailableN;0.0004;0.001;0.00075
+13;pc_DefaultRadiationUseEfficiency;0.4;0.6;0.5
+14;pc_CanopyReflectionCoefficient;0.05;0.1;0.08
+15;pc_SaturationBeta;1.5;4;2.5
+16;pc_StomataConductanceAlpha;30;50;40
+17;pc_StageAtMaxHeight;3.00E+000;6;4
+18;pc_CropHeightP1;6;15;9
+19;pc_CropHeightP2;0.1;0.6;0.35
+20;pc_LuxuryNCoeff;0.5;1.5;1
+21;pc_MaintenanceRespirationParameter1;0.07;0.09;0.08
+22;pc_MaintenanceRespirationParameter2;43;45;44
+23;pc_GrowthRespirationParameter1;0.09;0.11;0.1
+24;pc_GrowthRespirationParameter2;37;39;38
+25;pc_ResidueNRatio;0.1;1;0.5
+26;pc_MinimumNConcentration;0.004;0.006;0.005
+27;pc_NConcentrationB0;3;5;4.141
+28;pc_NConcentrationPN;0.5;3;2
+29;po_SpecAnaerobDenitrification;0.01;0.2;0.1
+30;po_ImmobilisationRateCoeffNO3;0.4;0.6;0.5
+31;po_ImmobilisationRateCoeffNH4;0.4;0.6;0.5
+32;pc_MaxCropNDemand;5;7;6
+33;po_NitrificationRateCoeffStandard;0.05;0.15;0.1
+34;po_TransportRateCoeff;0.01;0.2;0.1
+35;po_CN_Ratio_SMB;6.4;7;6.7
+36;vo_AOM_DryMatterContent;0.4;0.6;0.5
+37;vo_AOM_NH4Content;0.4;0.6;0.5
+38;vo_AOM_NO3Content;0.4;0.6;0.5
+39;vo_AOM_CarbamidContent;0.1;1;0.5
+40;vo_PartAOM_to_AOM_Slow;0.1;1;0.5
+41;vo_PartAOM_to_AOM_Fast;0.1;1;0.5
+42;vo_CN_Ratio_AOM_Slow;50;150;100
+43;vo_CN_Ratio_AOM_Fast;1;50;25
+44;po_SOM_SlowDecCoeffStandard;3.3e-5;5.3e-5;4.3e-5
+45;po_SOM_FastDecCoeffStandard;1.2e-4;1.6e-4;1.4e-4
+46;po_SMB_SlowMaintRateStandard;0.0007;0.0013;0.001
+47;po_SMB_FastMaintRateStandard;0.005;0.02;0.01
+48;po_SMB_SlowDeathRateStandard;0.0007;0.0013;0.001
+49;po_SMB_FastDeathRateStandard;0.001;0.1;0.01
+50;po_SMB_UtilizationEfficiency;0.5;0.7;0.6
+51;po_SOM_SlowUtilizationEfficiency;0.001;1;0.4
+52;po_SOM_FastUtilizationEfficiency;0.4;0.6;0.5
+53;po_AOM_SlowUtilizationEfficiency;0.35;0.45;0.4
+54;po_AOM_FastUtilizationEfficiency;0.3;0.5;0.4
+55;po_AOM_FastMaxC_to_N;200;2000;1000
+56;po_HydrolysisKM;0.001;0.1;0.00334
+57;po_HydrolysisP1;3.259e-12;5.259e-12;4.259e-12
+58;po_HydrolysisP2;0.408e-12;2.408e-12;1.408e-12
+59;pq_DiffusionCoefficientStandard;0.0001;0.001;0.000214
+$60_1$ ;pc_StageTemperatureSum1;10;100;51
+$60_2$ ;pc_StageTemperatureSum2;100;300;213
+$60_3$ ;pc_StageTemperatureSum3;50;200;130
+$60_4$ ;pc_StageTemperatureSum4;50;200;108
+$60_5$ ;pc_StageTemperatureSum5;100;300;223
+$60_6$ ;pc_StageTemperatureSum6;50;200;115
+$60_7$;pc_StageTemperatureSum7;5;70;25
+$61_1$;pc_StageKcFactor1;0.1;0.6;0.3
+$61_2$;pc_StageKcFactor2;0.5;1.5;0.8
+$61_3$;pc_StageKcFactor3;0.5;1.1;0.8
+$61_4$;pc_StageKcFactor4;0.7;1.3;0.97
+$61_5$;pc_StageKcFactor5;0.7;1.3;0.97
+$61_6$;pc_StageKcFactor6;0.7;1.3;0.9
+$61_7$;pc_StageKcFactor7;0.5;1.3;0.8
+$62_1$;pc_DroughtStressThreshold1;0.1;1;0
+$62_2$;pc_DroughtStressThreshold2;0.1;1;0
+$62_3$;pc_DroughtStressThreshold3;0.1;1;0
+$62_4$;pc_DroughtStressThreshold4;0.1;1;0
+$62_5$;pc_DroughtStressThreshold5;0.1;1;0
+$62_6$;pc_DroughtStressThreshold6;0.1;1;0
+$62_7$;pc_DroughtStressThreshold7;0.1;0.4;0
+$65_1$;pc_SpecificLeafArea1;0.002;0.003;0.0025
+$65_2$;pc_SpecificLeafArea2;0.0012;0.0022;0.0017
+$65_3$;pc_SpecificLeafArea3;0.001;0.002;0.0015
+$65_4$;pc_SpecificLeafArea4;0.0009;0.0019;0.0014
+$65_5$;pc_SpecificLeafArea5;0.0007;0.0017;0.0012
+$65_6$;pc_SpecificLeafArea6;0.0007;0.0017;0.0012
+$65_7$;pc_SpecificLeafArea7;0.0007;0.0017;0.0012
+$66_1$ ;pc_StageMaxRootNConcentration1;0.01;0.04;0.02
+$66_2$ ;pc_StageMaxRootNConcentration2;0.01;0.04;0.02
+$66_3$ ;pc_StageMaxRootNConcentration3;0.005;0.02;0.012
+$66_4$ ;pc_StageMaxRootNConcentration4;0.005;0.02;0.01
+$66_5$ ;pc_StageMaxRootNConcentration5;0.005;0.02;0.01
+$66_6$ ;pc_StageMaxRootNConcentration6;0.005;0.02;0.01
+$66_7$ ;pc_StageMaxRootNConcentration7;0.005;0.02;0.01
+$67_1$;pc_CriticalOxygenContent1;0.01;0.08;0.04
+$67_2$;pc_CriticalOxygenContent2;0.008;0.08;0.02
+$67_3$;pc_CriticalOxygenContent3;0.008;0.08;0.02
+$67_4$;pc_CriticalOxygenContent4;0.008;0.08;0.02
+$67_5$;pc_CriticalOxygenContent5;0.008;0.08;0.02
+$67_6$;pc_CriticalOxygenContent6;0.008;0.08;0.02
+$67_7$;pc_CriticalOxygenContent7;0.01;0.08;0.04

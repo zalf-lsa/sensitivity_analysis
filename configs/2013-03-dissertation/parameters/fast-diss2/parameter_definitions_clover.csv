@@ -1,0 +1,15 @@
+;;min;max;nom
+1;pc_MaxAssimilationRate;30;50;45
+14;pc_CanopyReflectionCoefficient;0.05;0.1;0.08
+21;pc_MaintenanceRespirationParameter1;0.07;0.09;0.08
+22;pc_MaintenanceRespirationParameter2;43;45;44
+23;pc_GrowthRespirationParameter1;0.09;0.11;0.1
+24;pc_GrowthRespirationParameter2;37;39;38
+$60_1$ ;pc_StageTemperatureSum1;10;100;40
+$60_2$ ;pc_StageTemperatureSum2;150;350;284
+$60_3$ ;pc_StageTemperatureSum3;100;300;200
+$64_2$;pc_DaylengthRequirement2;16;24;20
+$64_3$;pc_DaylengthRequirement3;16;24;20
+$65_1$;pc_SpecificLeafArea1;0.0015;0.0025;0.002
+$65_2$;pc_SpecificLeafArea2;0.0015;0.0025;0.002
+$65_3$;pc_SpecificLeafArea3;0.0015;0.0025;0.002
