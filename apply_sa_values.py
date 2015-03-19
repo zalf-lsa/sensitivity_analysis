@@ -21,6 +21,9 @@ def applySAValues(parameter_list, start_vector, env, crop_id=None):
 
     # initialisation of dev stage vectors
     size = 7 # developmental stages
+    organ_count = 4 # number of organs
+
+
 
     daylength_req_vector = monica.DoubleVector(size)
     stage_kc_vector = monica.DoubleVector(size)
@@ -34,7 +37,18 @@ def applySAValues(parameter_list, start_vector, env, crop_id=None):
     base_temperature_vector = monica.DoubleVector(size)
     optimum_temperature_vector = monica.DoubleVector(size)
 
-    for  i in range(size):
+    organ_growth_respiration_vector = monica.DoubleVector(organ_count)
+    organ_maintenance_respiration_vector = monica.DoubleVector(organ_count)
+
+    assimilate_partitioning_vector = []
+    for n in range(size):
+      assimilate_partitioning_vector.append(monica.DoubleVector(organ_count))
+
+    for stage_index in range(size):
+      for organ_index in range(organ_count):
+        assimilate_partitioning_vector[stage_index][organ_index] = -9999
+
+    for i in range(size):
         daylength_req_vector[i] = -9999
         stage_kc_vector[i] = -9999
         stage_temp_sum_vector[i] = -9999
@@ -47,6 +61,10 @@ def applySAValues(parameter_list, start_vector, env, crop_id=None):
         base_temperature_vector[i] = -9999
         optimum_temperature_vector[i] = -9999
 
+    for i in range(organ_count):
+        organ_growth_respiration_vector[i] = -9999
+        organ_maintenance_respiration_vector[i] = -9999
+
     daylength_req_changed = False
     stage_kc_changed = False
     stage_temp_sum_changed = False
@@ -58,14 +76,15 @@ def applySAValues(parameter_list, start_vector, env, crop_id=None):
     stage_max_root_nconcentration_changed = False
     base_temperature_changed = False
     optimum_temperature_changed = False
-    
+    organ_growth_respiration_changed = False
+    organ_maintenance_respiration_changed = False        
+    assimilate_partitioning_changed = False
+
     # go through all parameters in list
     for p in parameter_list:
         
         name = p.getName()
-        #print "Apply : ", name, start_vector[index], index #Prozessor", rank,"\t
-        #print "Apply : ", len(start_vector), index, type(start_vector[index])
-        #print "Apply1 : ", name, start_vector[index] #Prozessor", rank,"\t
+        print "Apply : ", name, start_vector[index], len(start_vector), index
         
         # soil temperature parameters
         if (name in ("pt_BaseTemperature", 
@@ -95,7 +114,7 @@ def applySAValues(parameter_list, start_vector, env, crop_id=None):
             
         # soil moisture parameters
         elif (name in ("pm_SnowMeltTemperature",
-                       "pm_SnowAccumulationThresholdTemperature",
+                       "pm_SnowAccumulationThresholdTemperature",           
                        "pm_TemperatureLimitForLiquidWater",
                        "pm_CorrectionRain", 
                        "pm_CorrectionSnow",
@@ -135,8 +154,6 @@ def applySAValues(parameter_list, start_vector, env, crop_id=None):
         elif (name in ("vs_Slope")):
             new_env.site.__setattr__(name, start_vector[index])
             
-        # crop parameters that have different values for developmental stages            
-
 
      
         # normal crop parameters            
@@ -152,7 +169,7 @@ def applySAValues(parameter_list, start_vector, env, crop_id=None):
                        "pc_InitialRootingDepth",
                        "pc_RootFormFactor",
                        "pc_MaxNUptakeParam",
-                       "pc_CarboxylationPathway",
+                       "pc_CarboxylationPathway",  
                        "pc_DefaultRadiationUseEfficiency",
                        "pc_MaxAssimilationRate",
                        "pc_MaxCropDiameter",
@@ -187,10 +204,6 @@ def applySAValues(parameter_list, start_vector, env, crop_id=None):
                        "pc_RespiratoryStress"                       
                         )):
             
-            # round values, because pathway can be either 1 or 2 (for a method selection)
-            if (name == "pc_CarboxylationPathway") :
-                val = int(round(start_vector[index] % 2)+1)
-                start_vector[index] = val
             
             # iterate through all production processes to changes special parameter
             new_env.centralParameterProvider.sensitivityAnalysisParameters.crop_parameters.__setattr__(name, start_vector[index])
@@ -210,28 +223,15 @@ def applySAValues(parameter_list, start_vector, env, crop_id=None):
                        "pc_MinimumNConcentrationRoot",
                        "pc_Tortuosity",
                        "pc_MaxCropNDemand",
-                       "pc_ReferenceAlbedo")):
+                       "pc_ReferenceAlbedo", 
+                       "pc_ReferenceLeafAreaIndex",
+                       "pc_ReferenceMaxAssimilationRate"
+                       )):
             
             # replace values in user crop parameters
             new_env.centralParameterProvider.userCropParameters.__setattr__(name, start_vector[index])
         
-        # organ dependent crop parameters
-        elif (name in ("pc_OrganGrowthRespiration",
-                       "pc_OrganMaintenanceRespiration")):
-            
-            size = 4 # assuming there are 4 different organs
-            param_vector = monica.DoubleVector(size)
-            
-            for i in range(0,size):                
-                
-                # changes all values of vector
-                param_vector[i] = start_vector[index]
-            
-            # iterate through all production processes to changes special parameter
-            new_env.centralParameterProvider.sensitivityAnalysisParameters.crop_parameters.__setattr__(name, param_vector)
-                
-            new_crop_rotation = monica.applySAChanges(env.cropRotation, new_env.centralParameterProvider)
-            new_env.setCropRotation(new_crop_rotation)
+       
         
         
         # organic parameters parameters
@@ -400,7 +400,6 @@ def applySAValues(parameter_list, start_vector, env, crop_id=None):
                 base_temperature_vector[int(stage)-1] = start_vector[index]
                 base_temperature_changed = True
 
-        # pc_OptimumTemperature -----------------------------
         m = re.match(r"""pc_OptimumTemperature(\d)""", name)
         if (m):
             stage = m.group(1)
@@ -408,11 +407,34 @@ def applySAValues(parameter_list, start_vector, env, crop_id=None):
                 optimum_temperature_vector[int(stage)-1] = start_vector[index]
                 optimum_temperature_changed = True
 
+        # pc_OrganGrowthRespiration
+        m = re.match(r"""pc_OrganGrowthRespiration(\d)""", name)
+        if (m):
+            organ_id = m.group(1)
+            if (organ_id != None):
+                organ_growth_respiration_vector[int(organ_id)-1] = start_vector[index]
+                organ_growth_respiration_changed = True
 
+        # pc_OrganMaintenanceRespiration
+        m = re.match(r"""pc_OrganMaintenanceRespiration(\d)""", name)
+        if (m):
+            organ_id = m.group(1)
+            if (organ_id != None):
+                organ_maintenance_respiration_vector[int(organ_id)-1] = start_vector[index]
+                organ_maintenance_respiration_changed = True
 
+        # pc_AssimilatePartitioningDevStage1Organ1
+        m = re.match(r"""pc_AssimilatePartitioningDevStage(\d)Organ(\d)""", name)
+        if (m):
+            dev_stage = m.group(1)
+            organ_id = m.group(2)
+            if (organ_id != None and dev_stage != None):
+                assimilate_partitioning_vector[int(dev_stage)-1][int(organ_id)-1]  = start_vector[index]
 
+                assimilate_partitioning_changed = True
 
         index = index+1 # index for the start_vector values
+    
 
     # end of for p in parameters
 
@@ -432,7 +454,7 @@ def applySAValues(parameter_list, start_vector, env, crop_id=None):
         new_env.centralParameterProvider.sensitivityAnalysisParameters.crop_parameters.__setattr__("pc_SpecificLeafArea", spec_leaf_area_vector)       
 
     if (base_daylength_changed):            
-       pc_BaseTemperature new_env.centralParameterProvider.sensitivityAnalysisParameters.crop_parameters.__setattr__("pc_BaseDaylength", base_daylength_vector)
+        new_env.centralParameterProvider.sensitivityAnalysisParameters.crop_parameters.__setattr__("pc_BaseDaylength", base_daylength_vector)
 
     if (drought_stress_threshold_changed):            
         new_env.centralParameterProvider.sensitivityAnalysisParameters.crop_parameters.__setattr__("pc_DroughtStressThreshold", drought_stress_threshold_vector)              
@@ -449,6 +471,11 @@ def applySAValues(parameter_list, start_vector, env, crop_id=None):
     if (optimum_temperature_changed):  
         new_env.centralParameterProvider.sensitivityAnalysisParameters.crop_parameters.__setattr__("pc_OptimumTemperature", optimum_temperature_vector)    
 
+    if (organ_growth_respiration_changed):  
+        new_env.centralParameterProvider.sensitivityAnalysisParameters.crop_parameters.__setattr__("pc_OrganGrowthRespiration", organ_growth_respiration_vector)    
+ 
+    if (organ_maintenance_respiration_changed):  
+        new_env.centralParameterProvider.sensitivityAnalysisParameters.crop_parameters.__setattr__("pc_OrganMaintenanceRespiration", organ_maintenance_respiration_vector)   
 
 
 
@@ -462,13 +489,21 @@ def applySAValues(parameter_list, start_vector, env, crop_id=None):
         critical_oxygen_content_changed or
         stage_max_root_nconcentration_changed or
         base_temperature_changed or
-        optimum_temperature_changed
-        ):
+        optimum_temperature_changed or
+        organ_maintenance_respiration_changed or
+        organ_growth_respiration_changed or
+        assimilate_partitioning_changed):
 
         new_crop_rotation = monica.applySAChanges(env.cropRotation, new_env.centralParameterProvider)
         new_env.setCropRotation(new_crop_rotation)
         
     #print "\n"
+
+    if (assimilate_partitioning_changed):  
+        for i in range(size):
+          new_crop_rotation = monica.setAssimilatePartitioningCoefficient(i, assimilate_partitioning_vector[i], env.cropRotation, new_env.centralParameterProvider)
+          new_env.setCropRotation(new_crop_rotation)
+
 
     return new_env
 

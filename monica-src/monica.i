@@ -19,7 +19,9 @@
 namespace std {
    %template(IntVector) vector<int>;
    %template(DoubleVector) vector<double>;
+   %template(VecVecdouble) vector< vector<double> >;
    %template(StringVector) vector<std::string>;
+   
    %template(PPVector) vector<Monica::ProductionProcess>;   
    %nodefaultdtor Climate::DataAccessor;
    %nodefaultdtor Monica::CropPtr;

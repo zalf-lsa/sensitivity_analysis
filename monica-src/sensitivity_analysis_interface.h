@@ -37,7 +37,12 @@ namespace Monica
 
 	std::vector<ProductionProcess>
 	applySAChanges(std::vector<ProductionProcess> ff,
-								 const CentralParameterProvider &centralParameterProvider);
+					 const CentralParameterProvider &centralParameterProvider);
+                                 
+    std::vector<ProductionProcess> setAssimilatePartitioningCoefficient( int dev_stage, 
+                    std::vector<double> partitioning_coefficient,
+                    std::vector<ProductionProcess> ff,
+                    const CentralParameterProvider &centralParameterProvider);
 
 }
 

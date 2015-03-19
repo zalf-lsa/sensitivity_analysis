@@ -26,3 +26,11 @@
 *.exe
 *.out
 *.app
+
+monica-src/obj
+monica-src/Makefile
+monica-src/monica.py
+*.cxx
+
+*.pyc
+morris/runs

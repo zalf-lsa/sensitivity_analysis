@@ -18,11 +18,24 @@ SUBTRACTION = 1
 Infinity = 1e10000
 NaN = Infinity / Infinity
  
+##########################################################
+##########################################################
+##########################################################
+
 def is_nan(x):
     return type(x) is float and x != x
 
+##########################################################
+##########################################################
+##########################################################
+
 def is_inf(x):
     return x in (Infinity, -Infinity)
+
+##########################################################
+##########################################################
+##########################################################
+
 """
 """
 def removeWeatherItems(list):
@@ -34,6 +47,10 @@ def removeWeatherItems(list):
             
     return new_list
 
+##########################################################
+##########################################################
+##########################################################
+
 """ 
 """
 def getNominalList(list):
@@ -43,6 +60,10 @@ def getNominalList(list):
         new_list.append(float(p.getNominal()))    
         
     return new_list
+
+##########################################################
+##########################################################
+##########################################################
 
         
 """
@@ -73,6 +94,10 @@ def saveEffects(parameter_effects, parameter_list, output_path):
                 #print parameter_names[index], effects
                 file.writerow(effects)                
             index = index+1       
+
+##########################################################
+##########################################################
+##########################################################
         
       
 """
@@ -85,6 +110,10 @@ def getOutputNames():
     for id  in result_ids:
         names.append(monica.resultIdInfo(id).shortName)
     return names
+
+##########################################################
+##########################################################
+##########################################################
 
 """
 Reads parameter configuration that are specified in a file
@@ -100,12 +129,12 @@ def readParameterFile(filename):
 
     line_nr = 0
     for line in parameter_file: 
-        print line
+        print line, len(line)
         if (line_nr==0):
             line_nr = line_nr + 1
             continue
 
-        if (len(line) < 6 and len(line)>0):            
+        if (len(line)>0):            
             parameter = SAParameter(line[1],float(line[2]), float(line[3]),float(line[4]))
             parameter_list.append(parameter)
             #parameter.display()
@@ -114,6 +143,10 @@ def readParameterFile(filename):
             sys.exit(-1)
     
     return parameter_list
+
+##########################################################
+##########################################################
+##########################################################
 
 """
 Reads parameter configuration that are specified in a file
@@ -155,7 +188,9 @@ def readNewParameterFile(filename, crop_id):
     print "Have read ", len(parameter_list), "parameters"
     return parameter_list
 
-
+##########################################################
+##########################################################
+##########################################################
 
 """
 Returns last element of a list 
@@ -169,6 +204,11 @@ def lastElement(list):
     
     return 0 
 
+##########################################################
+##########################################################
+##########################################################
+
+
 """
 Returns last element of a list 
 """    
@@ -178,6 +218,9 @@ def getMeanOfList(list):
     else:
         return None
 
+##########################################################
+##########################################################
+##########################################################
 
 def getOutputId(output_list):
     
@@ -220,43 +263,16 @@ def getOutputId(output_list):
                 break
     return output_id
 
-class CropInfo:
-  def __init__(self, crop_id, name, parameter_file, simulation_files_dir=None):
-    self.crop_id = crop_id
-    self.name = name
-    self.parameter_file = parameter_file
-    self.simulation_files_dir = simulation_files_dir
 
-        
-def getCropsForSA():
-
-  crop_map = {}
-  crop_map[1]   = CropInfo(1, "Winterweizen",   "parameter_definitions_winter_wheat.csv",     "winter-wheat/")
-  crop_map[19]  = CropInfo(19,"Wintertriticale","parameter_definitions_winter_triticale.csv", "winter-triticale/")
-  crop_map[2]   = CropInfo(2, "Wintergerste",   "parameter_definitions_winter_barley.csv",     "winter-barley/")
-  crop_map[9]   = CropInfo(9, "Winterraps",     "parameter_definitions_winter_rape.csv",      "winter-rape/")
-  crop_map[4]   = CropInfo(4, "Sommergerste",   "parameter_definitions_spring_barley.csv",    "spring-barley/")
-  crop_map[23]  = CropInfo(23,"Sommertriticale","parameter_definitions_spring_triticale.csv", "spring-triticale/")
-  crop_map[10]  = CropInfo(10,"Zuckerrübe",     "parameter_definitions_sugarbeet.csv",        "sugar-beet/")
-  crop_map[7]   = CropInfo(7, "Mais",           "parameter_definitions_maize.csv",            "maize/")
-  crop_map[18]  = CropInfo(18,"Sudangras",      "parameter_definitions_sudangras.csv",        "sudangras/")
-  crop_map[12]  = CropInfo(12,"Phacelia",       "parameter_definitions_phacelia.csv",         "phacelia/")
-  crop_map[13]  = CropInfo(13,"Kleegras",       "parameter_definitions_clover.csv",           "clover/")
-  crop_map[14]  = CropInfo(14,"Luzernegras",    "parameter_definitions_alfalfa.csv",          "alfalfa/")
-  crop_map[16]  = CropInfo(16,"Weidelgras",     "parameter_definitions_rye_grass.csv",        "rye_grass/")
-  crop_map[22]  = CropInfo(22,"Hafer",          "parameter_definitions_oat.csv",              "oat/")
-  return crop_map
-
+##########################################################
+##########################################################
+##########################################################
 
 def get_optimised_trajectories(parameter_list, parameter_grid, start_vector_count, ranges, schrittweite, random_traj_count):
-
-  
-
 
   parameter_number = len(parameter_list)
 
   print "Parameter_number:", parameter_number
-  
 
   trajectories = []
   for traj_count in range(random_traj_count):
@@ -310,15 +326,16 @@ def get_optimised_trajectories(parameter_list, parameter_grid, start_vector_coun
 
     trajectories.append(trajectory)
 
-
-
-
   opt_trajectories = find_trajectories_with_maximised_distance(trajectories, parameter_grid, parameter_number, start_vector_count)
-    
 
   return opt_trajectories
 
+##########################################################
+##########################################################
+##########################################################
 
+"""
+"""
 def find_trajectories_with_maximised_distance(trajectories, parameter_grid, parameter_number, start_vector_count):
   comm = MPI.COMM_WORLD
   rank = comm.Get_rank()
@@ -341,7 +358,7 @@ def find_trajectories_with_maximised_distance(trajectories, parameter_grid, para
   print rank, "received: ", local_list
 
   for m in range(local_list[0],traj_count):
-    for l in local_list:
+    for l in local_list:##########################################################
       #print rank, "\t", m, l, parameter_distance_array[m,l]
       if ((m != l)):
         # calculate distrance of two trajectories
@@ -407,12 +424,9 @@ def find_trajectories_with_maximised_distance(trajectories, parameter_grid, para
 
   return opt_trajectories
   
-  
-
-
-        
-
-
+##########################################################
+##########################################################
+##########################################################
 
 """
 Calculates number of steps based on the parameter number
@@ -426,6 +440,9 @@ def getNumberOfMorrisSteps(parameter_number, range_number, schrittweite):
     #steps = 1
     return int(steps)
 
+##########################################################
+##########################################################
+##########################################################
 
 """ 
 Randomly generates operation for manipulating the
