@@ -124,12 +124,12 @@ According to these parameter specification the SA will be done.
 def readParameterFile(filename):
     parameter_list = []
 
-    print "Reading1 parameters from file: ", filename
+    print "Reading parameters from file: ", filename
     parameter_file = csv.reader(open(filename,'r'), delimiter=';')
 
     line_nr = 0
     for line in parameter_file: 
-        print line, len(line)
+        #print line, len(line)
         if (line_nr==0):
             line_nr = line_nr + 1
             continue

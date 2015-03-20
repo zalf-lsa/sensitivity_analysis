@@ -54,7 +54,9 @@ add_analyse_after_calculation = 1
 parameter_files_directory = "../configs/2015-03-time-dependent-SA/parameters"
 
 #
-simulation_files_path = "../configs/2015-03-time-dependent-SA/sites/Ascha"
+simulation_files_path = "../configs/2015-03-time-dependent-SA/sites/"
+
+sites = ["Ascha"]
 
 #list that contains MONICA crop ids of the crops SA will be performed
 crops_to_analyse = [1]
@@ -71,114 +73,124 @@ Main routine for parallel MPI execution
 """
 def mpi_main():
 
+  basis_output_dir = datetime.datetime.today().strftime("%Y-%m-%d_%H-%M-%S")
+
   crop_map = getCropsForSA()
-  
-  output_dir = datetime.datetime.today().strftime("%Y-%m-%d_%H-%M-%S")
 
-  for crop_id in crops_to_analyse:
-
-    crop_info = crop_map[crop_id]
+  for site in sites:
     
-    # get information of analysed crop
-    crop_name = crop_info.name
-    crop_parameter_file = parameter_files_directory + "/" + crop_info.parameter_file
-   
-    crop_simulation_files_dir = simulation_files_path + "/" + crop_info.simulation_files_dir
-    print crop_id, crop_name, crop_parameter_file, crop_simulation_files_dir
+    output_dir = basis_output_dir + "/" + site + "/"
 
-    # create output director
-   
-    output_path = "runs/" + output_dir + "/crop-" + crop_name + "-min-step" + str(schrittweite) + "_range" + str(ranges) + "_startvector"+ str(start_vector_count)
 
-    monica.activateDebugOutput(0)
-	 
-    node_list = []
     
-    full_parameter_list = sa_functions.readParameterFile(crop_parameter_file)
-    nominal_list = sa_functions.getNominalList(full_parameter_list)
-
-    run_parameter_list= full_parameter_list
-    run_parameter_count = len(run_parameter_list)
-    
-    # reads parameter specification from a file 
-    parameter_count = len(full_parameter_list)      
-    parameter_grid = generateParameterGrid(run_parameter_list,ranges)
-
-    # HERMES configuration
-    hermes_config = monica.getHermesConfigFromIni(crop_simulation_files_dir)
-    env = monica.getHermesEnvFromConfiguration(hermes_config)
-    env = applySAValues(full_parameter_list, nominal_list, env, crop_id)    
 
 
-    if (rank==0):
+    for crop_id in crops_to_analyse:
 
-        if (not os.path.exists(output_path)):        
-            os.makedirs(output_path)        
-        if (not os.path.exists(output_path+"/outputs/")):  
-            os.makedirs(output_path+"/outputs/")
-        if (not os.path.exists(output_path+"/distr/")):  
-            os.makedirs(output_path+"/distr/")        
-
-    trajectories = sa_functions.get_optimised_trajectories(full_parameter_list, parameter_grid, start_vector_count, ranges, schrittweite, random_start_vector_count)
-        
-        # get names of parameters
-        #names = [str(p.getName()) for p in full_parameter_list]
-        #sample_file = csv.writer(open(output_path+"/sample_file.txt", "wb"), delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-        #sample_file.writerow(names)
-
-        # generate list for scattering to nodes        
-
-    if (rank == 0):    
-      trajectory_list = mpi_helper.splitListForNodes(trajectories, size)
-
-      for n in range(size):
-          #print n
-          node_list.append([trajectory_list[n], parameter_grid, full_parameter_list])
-
-#        print node_list, len(node_list)
-
-    ###################################################
-    # parallel part
-    ##################################################
-    local_list = comm.scatter(node_list, root=0)        
-
-	 
-    local_trajectory_list = local_list[0]
-    local_parameter_grid = local_list[1]
-    local_parameter_list = local_list[2]
-    print rank, "Received", len(local_trajectory_list), "elements" #, local_sv_list
-    #print rank, "Received", local_parameter_grid
-    #print rank, "Received", local_parameter_list
-
-    effect_list = []
-    if (len(local_trajectory_list) > 0):
-      effect_list = runMorrisSA(local_parameter_list, local_parameter_grid, local_trajectory_list, env, output_path, crop_id)
-      #print rank, "EFFECT_LIST local: ", effect_list
-    	
-    global_effect_list = comm.gather(effect_list, root=0)
-	
-    ##################################################
-    # end of parallel part
-    ##################################################
+      crop_info = crop_map[crop_id]
+      
+      # get information of analysed crop
+      crop_name = crop_info.name
+      crop_dir = crop_info.simulation_files_dir
+      crop_parameter_file = parameter_files_directory + "/" + crop_dir + crop_info.parameter_file
      
+      crop_simulation_files_dir = simulation_files_path + site + "/" + crop_info.simulation_files_dir
+      print crop_id, crop_name, crop_parameter_file, crop_simulation_files_dir
+
+      # create output director
+     
+      output_path = "runs/" + output_dir + "/crop-" + crop_name + "-min-step" + str(schrittweite) + "_range" + str(ranges) + "_startvector"+ str(start_vector_count)
+
+      monica.activateDebugOutput(0)
+	   
+      node_list = []
+      
+      full_parameter_list = sa_functions.readParameterFile(crop_parameter_file)
+      nominal_list = sa_functions.getNominalList(full_parameter_list)
+
+      run_parameter_list= full_parameter_list
+      run_parameter_count = len(run_parameter_list)
+      
+      # reads parameter specification from a file 
+      parameter_count = len(full_parameter_list)      
+      parameter_grid = generateParameterGrid(run_parameter_list,ranges)
+
+      # HERMES configuration
+      hermes_config = monica.getHermesConfigFromIni(crop_simulation_files_dir)
+      env = monica.getHermesEnvFromConfiguration(hermes_config)
+      env.setMode(monica.Env.MODE_SENSITIVITY_ANALYSIS)
+      env = applySAValues(full_parameter_list, nominal_list, env, crop_id)    
+
+
+      if (rank==0):
+
+          if (not os.path.exists(output_path)):        
+              os.makedirs(output_path)        
+          if (not os.path.exists(output_path+"/outputs/")):  
+              os.makedirs(output_path+"/outputs/")
+          if (not os.path.exists(output_path+"/distr/")):  
+              os.makedirs(output_path+"/distr/")        
+
+      trajectories = sa_functions.get_optimised_trajectories(full_parameter_list, parameter_grid, start_vector_count, ranges, schrittweite, random_start_vector_count)
+          
+          # get names of parameters
+          #names = [str(p.getName()) for p in full_parameter_list]
+          #sample_file = csv.writer(open(output_path+"/sample_file.txt", "wb"), delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+          #sample_file.writerow(names)
+
+          # generate list for scattering to nodes        
+
+      if (rank == 0):    
+        trajectory_list = mpi_helper.splitListForNodes(trajectories, size)
+
+        for n in range(size):
+            #print n
+            node_list.append([trajectory_list[n], parameter_grid, full_parameter_list])
+
+  #        print node_list, len(node_list)
+
+      ###################################################
+      # parallel part
+      ##################################################
+      local_list = comm.scatter(node_list, root=0)        
+
+	   
+      local_trajectory_list = local_list[0]
+      local_parameter_grid = local_list[1]
+      local_parameter_list = local_list[2]
+      print rank, "Received", len(local_trajectory_list), "elements" #, local_sv_list
+      #print rank, "Received", local_parameter_grid
+      #print rank, "Received", local_parameter_list
+
+      effect_list = []
+      if (len(local_trajectory_list) > 0):
+        effect_list = runMorrisSA(local_parameter_list, local_parameter_grid, local_trajectory_list, env, output_path, crop_id)
+        #print rank, "EFFECT_LIST local: ", effect_list
+      	
+      global_effect_list = comm.gather(effect_list, root=0)
 	
-    if (rank == 0):
-        #print "SAVE: ", global_effect_list, "\n",full_parameter_list,"\n",output_path
-        sa_functions.saveEffects(global_effect_list, full_parameter_list,output_path)
-         
-        dir_file = open("output_dir.r", "w")
-        print >> dir_file, "directory=\""+ output_path+"\""
-        dir_file.close()
-        if (add_analyse_after_calculation==1):         
-            os.system("python summary.py")
-            os.system("python generate_parameter_ranking.py")
-            #os.system("R --slave --vanilla < generateMeanStdPlots.r")
-            #os.system("R --slave --vanilla < input_distr.r")
-            dir_file.close()
- 
-    t_end = datetime.datetime.now()
-    time_simulation = t_end - t_start 
-    print "Node: ", rank, "\tSimulationszeit: ", time_simulation
+      ##################################################
+      # end of parallel part
+      ##################################################
+       
+	
+      if (rank == 0):
+          #print "SAVE: ", global_effect_list, "\n",full_parameter_list,"\n",output_path
+          sa_functions.saveEffects(global_effect_list, full_parameter_list,output_path)
+           
+          dir_file = open("output_dir.r", "w")
+          print >> dir_file, "directory=\""+ output_path+"\""
+          dir_file.close()
+          if (add_analyse_after_calculation==1):         
+              os.system("python summary.py")
+              os.system("python generate_parameter_ranking.py")
+              #os.system("R --slave --vanilla < generateMeanStdPlots.r")
+              #os.system("R --slave --vanilla < input_distr.r")
+              dir_file.close()
+   
+      t_end = datetime.datetime.now()
+      time_simulation = t_end - t_start 
+      print "Node: ", rank, "\tSimulationszeit: ", time_simulation
    
 
 ####################################################################
@@ -253,10 +265,10 @@ def runMorrisSA(parameter_list, parameter_grid, local_trajectory_list, env, outp
         # first model evaluation
         if (point_number==0):
           start_vector_index = point
-          print rank, "\t",  point_number, "/", len(traj), "\t", point  
+          print rank, "\t",  point_number, "/", len(traj)#, "\t", point  
           result_old =getResult(result_map, start_vector_index, env, parameter_list, parameter_grid, crop_id)            
         else:
-             
+          print rank, "\t",  point_number, "/", len(traj)#, "\t", point  
           # next model evaluation
           result_new = getResult(result_map, point, env, parameter_list, parameter_grid, crop_id)
                          
@@ -284,7 +296,7 @@ def runMorrisSA(parameter_list, parameter_grid, local_trajectory_list, env, outp
     t_morris_end = datetime.datetime.now()
     time_morris_step = t_morris_end - t_morris_start
     print rank, "Morris_Endtime: ", time_morris_step
-    print parameter_effects  
+    #print parameter_effects  
     return parameter_effects
         
     
@@ -321,10 +333,10 @@ def analyseResults(result_old, result_new, parameter_index, dx, outputs, paramet
         
         #old = sa_functions.lastElement(result_old.getResultsById(id))
         #new = sa_functions.lastElement(result_new.getResultsById(id))
-      print monica.resultIdInfo(id).shortName
+      #print monica.resultIdInfo(id).shortName
       old = sa_functions.getMeanOfList(result_old.getResultsById(id))
       new = sa_functions.getMeanOfList(result_new.getResultsById(id))
-      print monica.resultIdInfo(id).shortName, new
+      #print monica.resultIdInfo(id).shortName, new
       #old = numpy.sum(result_old.getResultsById(id))
 #      new = numpy.sum(result_new.getResultsById(id))    
  #     print monica.resultIdInfo(id).shortName, new
@@ -337,7 +349,7 @@ def analyseResults(result_old, result_new, parameter_index, dx, outputs, paramet
       else:
           result = math.fabs(old-new) / dx          
           effect.append(result)                        
-          print "\n",rank,"\t", monica.resultIdInfo(id).shortName,parameter_index,"\tValue", parameter_value, "\tOLD: ", old, "\tNEW: ", new, "DX: ", dx,"\tResult",result
+          #print "\n",rank,"\t", monica.resultIdInfo(id).shortName,parameter_index,"\tValue", parameter_value, "\tOLD: ", old, "\tNEW: ", new, "DX: ", dx,"\tResult",result
       
       
 
@@ -357,8 +369,8 @@ def analyseResults(result_old, result_new, parameter_index, dx, outputs, paramet
     
 def standardizeEffects(parameter_effects, inputs, outputs):
     
-    print "Inputs:\t",inputs, "\n"
-    print "Output:\t",outputs, "\n"
+    #print "Inputs:\t",inputs, "\n"
+    #print "Output:\t",outputs, "\n"
     
     num_outputs = len(monica.sensitivityAnalysisResultIds())
     
@@ -366,13 +378,13 @@ def standardizeEffects(parameter_effects, inputs, outputs):
     std_inputs = []
     for input in inputs:
         std_inputs.append(numpy.std(input))
-    print "STD_Inputs: ", std_inputs
+    #print "STD_Inputs: ", std_inputs
 
     # calculate standard deviation for the outputs
     std_outputs = []
     for output in outputs:
         std_outputs.append(numpy.std(output))
-    print "STD_Outputs: ", std_outputs
+    #print "STD_Outputs: ", std_outputs
     
     # iterate through effect array that has the structure
     # effect[inputs][steps][outputs]

@@ -16,8 +16,8 @@ OBJECTS_DIR = obj
 
 
 
-PROJECT_DIR = /home/specka/devel/github
-#PROJECT_DIR = /media/san1_data1/data1/specka/new_devel/github
+#PROJECT_DIR = /home/specka/devel/github
+PROJECT_DIR = /media/san1_data1/data1/specka/devel/github
 
 UTIL_DIR = $${PROJECT_DIR}/util
 MONICA_SRC = $${PROJECT_DIR}/monica
@@ -109,7 +109,7 @@ DSS|CCG|GIS:SOURCES += $${UTIL_DIR}/tools/coord-trans.cpp
 #-------------------------------------------------------------
 
 INCLUDEPATH += \
-$${PROJECT_DIR}/boost-1.39.0 \
+$${PROJECT_DIR}/boost_1_55_0 \
 $${PROJECT_DIR}/util \
 $${PROJECT_DIR}/loki-lib/include \
 $${MONICA_SRC}

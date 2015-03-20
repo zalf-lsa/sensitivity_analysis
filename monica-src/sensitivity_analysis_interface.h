@@ -44,6 +44,14 @@ namespace Monica
                     std::vector<ProductionProcess> ff,
                     const CentralParameterProvider &centralParameterProvider);
 
+	  /**
+	   * @return list if ids used for sensitivity analysis
+	   */
+	  const std::vector<int>& sensitivityAnalysisResultIds();
+
+    CropParameters* getCropParameters(int id, std::vector<ProductionProcess> ff);
+    std::vector<ProductionProcess> applyNewCropParameters(int crop_id, std::vector<ProductionProcess> ff, CropParameters *cps); 
+
 }
 
 #endif /*SENSITIVITY_ANALYIS_H_*/

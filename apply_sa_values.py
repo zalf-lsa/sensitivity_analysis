@@ -84,7 +84,7 @@ def applySAValues(parameter_list, start_vector, env, crop_id=None):
     for p in parameter_list:
         
         name = p.getName()
-        print "Apply : ", name, start_vector[index], len(start_vector), index
+        #print "Apply : ", name, start_vector[index], len(start_vector), index
         
         # soil temperature parameters
         if (name in ("pt_BaseTemperature", 
@@ -95,22 +95,22 @@ def applySAValues(parameter_list, start_vector, env, crop_id=None):
             new_env.centralParameterProvider.userSoilTemperatureParameters.__setattr__(name, start_vector[index])
         
         # climate data for the data accessor object    
-        elif (name in ("tmin", 
-                       "tmax", 
-                       "tavg", 
-                       "precip", 
-                       "globrad", 
-                       "wind", 
-                       "sunhours", 
-                       "relhumid")):
-            
-            # replace climate data
-            size = new_env.numberOfPossibleSteps()
-            new_vector = monica.DoubleVector(size)
-            for i in range(0,size):
-                new_vector[i] = start_vector[index]
-
-            new_env.addOrReplaceClimateData(name,new_vector)
+#        elif (name in ("tmin", 
+#                       "tmax", 
+#                       "tavg", 
+#                       "precip", 
+#                       "globrad", 
+#                       "wind", 
+#                       "sunhours", 
+#                       "relhumid")):
+#            
+#            # replace climate data
+#            size = new_env.numberOfPossibleSteps()
+#            new_vector = monica.DoubleVector(size)
+#            for i in range(0,size):
+#                new_vector[i] = start_vector[index]
+#
+#            new_env.addOrReplaceClimateData(name,new_vector)
             
         # soil moisture parameters
         elif (name in ("pm_SnowMeltTemperature",
@@ -132,29 +132,6 @@ def applySAValues(parameter_list, start_vector, env, crop_id=None):
             # replace values of user soil moisture parameters
             new_env.centralParameterProvider.userSoilMoistureParameters.__setattr__(name, start_vector[index])
          
-        # sensitivity analysis parameters
-        elif (name in ("p_MeanBulkDensity",
-                       "p_MeanFieldCapacity",
-                       "p_HeatConductivityFrozen",
-                       "p_HeatConductivityUnfrozen",
-                       "p_LatentHeatTransfer",
-                       "p_ReducedHydraulicConductivity",
-                       "vs_FieldCapacity",
-                       "vs_Saturation",
-                       "vs_PermanentWiltingPoint",
-                       "vc_SoilCoverage",
-                       "vc_MaxRootingDepth",
-                       "vc_RootDiameter",
-                       "vs_SoilMoisture", 
-                       "vs_SoilTemperature")):   
-            
-            new_env.centralParameterProvider.sensitivityAnalysisParameters.__setattr__(name, start_vector[index])
-            
-        # env parameters    
-        elif (name in ("vs_Slope")):
-            new_env.site.__setattr__(name, start_vector[index])
-            
-
      
         # normal crop parameters            
         elif (name in ("pc_InitialKcFactor",
@@ -203,13 +180,19 @@ def applySAValues(parameter_list, start_vector, env, crop_id=None):
                        "pc_LowTemperatureExposure",
                        "pc_RespiratoryStress"                       
                         )):
-            
-            
-            # iterate through all production processes to changes special parameter
-            new_env.centralParameterProvider.sensitivityAnalysisParameters.crop_parameters.__setattr__(name, start_vector[index])
-            
-            new_crop_rotation = monica.applySAChanges(env.cropRotation, new_env.centralParameterProvider)
+
+            crop_parameters = monica.getCropParameters(crop_id, new_env.cropRotation)
+            crop_parameters.__setattr__(name, start_vector[index])
+            new_crop_rotation = monica.applyNewCropParameters(crop_id, env.cropRotation, crop_parameters); 
             new_env.setCropRotation(new_crop_rotation)
+
+
+
+            # iterate through all production processes to changes special parameter
+            #new_env.centralParameterProvider.sensitivityAnalysisParameters.crop_parameters.__setattr__(name, start_vector[index])
+            
+            #new_crop_rotation = monica.applySAChanges(env.cropRotation, new_env.centralParameterProvider)
+            #new_env.setCropRotation(new_crop_rotation)
             
         # user crop parameters
         elif (name in ("pc_MaintenanceRespirationParameter1",
@@ -227,7 +210,7 @@ def applySAValues(parameter_list, start_vector, env, crop_id=None):
                        "pc_ReferenceLeafAreaIndex",
                        "pc_ReferenceMaxAssimilationRate"
                        )):
-            
+
             # replace values in user crop parameters
             new_env.centralParameterProvider.userCropParameters.__setattr__(name, start_vector[index])
         
@@ -273,11 +256,12 @@ def applySAValues(parameter_list, start_vector, env, crop_id=None):
                        "po_AtmosphericResistance"
                        "po_AmmoniaOxidationRateCoeffStandard",
                        "po_NitriteOxidationRateCoeffStandard"
-
                        )):
-            
+
+
+
             # replace values in user crop parameters
-            new_env.organic.__setattr__(name, start_vector[index])
+            new_env.centralParameterProvider.userSoilOrganicParameters.__setattr__(name, start_vector[index])
             
         # user soil transport parameters
         elif (name in ("pq_DiffusionCoefficientStandard",
@@ -286,29 +270,6 @@ def applySAValues(parameter_list, start_vector, env, crop_id=None):
             
             # replace values in user crop parameters
             new_env.centralParameterProvider.userSoilTransportParameters.__setattr__(name, start_vector[index])
-            
-        # user environment parameters
-        elif (name in ("p_LeachingDepth"),
-                       "p_MinGroundwaterDepth"):
-            
-
-            # replace values in user crop parameters
-            new_env.centralParameterProvider.userEnvironmentParameters.__setattr__(name, start_vector[index])
-            if (name == "p_MinGroundwaterDepth"):
-                new_env.centralParameterProvider.userEnvironmentParameters.__setattr__("p_MaxGroundwaterDepth", start_vector[index]+2)
-            
-        # organic matter parameters
-        elif (name in ("vo_AOM_DryMatterContent",
-                       "vo_AOM_NH4Content",
-                       "vo_AOM_NO3Content",
-                       "vo_AOM_CarbamidContent",
-                       "vo_PartAOM_to_AOM_Slow",
-                       "vo_PartAOM_to_AOM_Fast",
-                       "vo_CN_Ratio_AOM_Slow",
-                       "vo_CN_Ratio_AOM_Fast")):
-            new_env.centralParameterProvider.sensitivityAnalysisParameters.organic_matter_parameters.__setattr__(name, start_vector[index])                      
-            new_crop_rotation = monica.applySAChanges(env.cropRotation, new_env.centralParameterProvider)
-            new_env.setCropRotation(new_crop_rotation)
             
 
 

@@ -66,6 +66,9 @@ Monica::applySAChanges(std::vector<ProductionProcess> ff,
     }
 
     CropParameters* cps = new CropParameters((*crop->cropParameters()));
+
+    
+    
     
   
     // pc_DaylengthRequirement
@@ -366,3 +369,66 @@ Monica::setAssimilatePartitioningCoefficient(
   return ff;
 
 }
+
+
+CropParameters* Monica::getCropParameters(int id, std::vector<ProductionProcess> ff)
+{
+  BOOST_FOREACH(ProductionProcess pp, ff)
+  {
+    CropPtr crop = pp.crop();
+
+    if (id == crop->id()){
+      //cout << "return crop parameters" << endl;
+      return new CropParameters((*crop->cropParameters()));
+    }
+  }
+  return NULL;   
+
+}
+
+
+std::vector<ProductionProcess> 
+Monica::applyNewCropParameters(int crop_id, std::vector<ProductionProcess> ff, CropParameters *cps) 
+{
+  std::vector<ProductionProcess> new_ff;
+
+  BOOST_FOREACH(ProductionProcess pp, ff)
+  {
+    CropPtr crop = pp.crop();
+
+    
+    if (crop_id == crop->id()){
+      //cout << "Apply new crop parameters" << endl;
+      crop->setCropParameters(cps);
+    }
+    new_ff.push_back(pp);      
+  }
+  return new_ff;
+}
+
+
+//------------------------------------------------------------------------------
+const vector<int>& Monica::sensitivityAnalysisResultIds()
+{
+  static ResultId ids[] =
+  {
+    primaryYield,                   // done
+    biomassNContent,
+    aboveGroundBiomass,
+    aboveBiomassNContent,
+    avg0_90cmSoilMoisture,         // done
+    mean90cmMonthlyAvgWaterContent, // done
+    yearlySumGroundWaterRecharge,    
+    yearlySumNLeaching,
+    sum90cmYearlyNatDay,
+    sumETaPerCrop,                  // done
+    avg30cmMonthlyAvgCorg
+    
+  };
+
+  //static vector<int> v(ids, ids+2);
+  static vector<int> v(ids, ids+11);
+
+  return v;
+}
+

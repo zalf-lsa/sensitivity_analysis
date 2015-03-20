@@ -17,24 +17,10 @@ xlim=0.02
 width=4
 height=4
 
-path = "2013-01-25-all/"
+path = "../morris/runs/TDSA-2015-03-20/Ascha/"
 
 
-folders = [["crop-Winterweizen-min-step5_range20_startvector40", "Winterweizen"],
-            ["crop-Zuckerrube-min-step5_range20_startvector40",  "Zuckerrube"],
-            ["crop-Sommergerste-min-step5_range20_startvector40", "Sommergerste"],
-            ["crop-Mais-min-step5_range20_startvector40", "Mais"],
-            ["crop-Kleegras-min-step5_range20_startvector40", "Kleegras"],
-            ["crop-Winterraps-min-step5_range20_startvector40", "Winterraps"],
-            ["crop-Hafer-min-step5_range20_startvector40", "Hafer"],
-            ["crop-Luzernegras-min-step5_range20_startvector40", "Luzernegras"],
-            ["crop-Phacelia-min-step5_range20_startvector40", "Phacelia"],
-            ["crop-Sommertriticale-min-step5_range20_startvector40", "Sommertriticale"],
-            ["crop-Sudangras-min-step5_range20_startvector40", "Sudangras"],
-            ["crop-Weidelgras-min-step5_range20_startvector40", "Weidelgras"],
-            ["crop-Wintergerste-min-step5_range20_startvector40", "Wintergerste"],
-            ["crop-Wintertriticale-min-step5_range20_startvector40", "Wintertriticale"]
-            ]
+folders = [["crop-Winter wheat-min-step6_range20_startvector20", "Winterweizen"]]
 
 m_color = "#c85a2e"
 

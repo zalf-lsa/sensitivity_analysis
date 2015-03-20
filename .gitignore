@@ -33,4 +33,6 @@ monica-src/monica.py
 *.cxx
 
 *.pyc
+*.py~
 morris/runs
+*.*~
