@@ -23,20 +23,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "sensitivity_analysis_interface.h"
-
-#include "boost/foreach.hpp"
-
-#define LOKI_OBJECT_LEVEL_THREADING
-#include "loki/Threads.h"
+#include <mutex>
 
 using namespace std;
 using namespace Monica;
 
 
-/**
- * @brief Lockable object
- */
-struct L: public Loki::ObjectLevelLockable<L> {};
+
 
 /**
  * Check, if some parameters should be changed according to sensitivity analysis simulation.
@@ -52,7 +45,8 @@ Monica::applySAChanges(std::vector<ProductionProcess> ff,
 //  cout << "Apply SA values method" << endl;
   std::vector<ProductionProcess> new_ff;
 
-  BOOST_FOREACH(ProductionProcess pp, ff)
+  
+  for (ProductionProcess pp : ff)
   {
     CropPtr crop = pp.crop();
 
@@ -313,7 +307,7 @@ Monica::setAssimilatePartitioningCoefficient(
 {
     std::vector<ProductionProcess> new_ff;
 
-  BOOST_FOREACH(ProductionProcess pp, ff)
+  for(ProductionProcess pp : ff)
   {
     CropPtr crop = pp.crop();
 
@@ -364,7 +358,7 @@ Monica::setAssimilatePartitioningCoefficient(
     crop->setCropParameters(cps);
     new_ff.push_back(pp);
   
-  } // BOOST FOREACH
+  } // for
 
   return ff;
 
@@ -373,7 +367,7 @@ Monica::setAssimilatePartitioningCoefficient(
 
 CropParameters* Monica::getCropParameters(int id, std::vector<ProductionProcess> ff)
 {
-  BOOST_FOREACH(ProductionProcess pp, ff)
+  for (ProductionProcess pp : ff)
   {
     CropPtr crop = pp.crop();
 
@@ -392,7 +386,7 @@ Monica::applyNewCropParameters(int crop_id, std::vector<ProductionProcess> ff, C
 {
   std::vector<ProductionProcess> new_ff;
 
-  BOOST_FOREACH(ProductionProcess pp, ff)
+  for (ProductionProcess pp : ff)
   {
     CropPtr crop = pp.crop();
 

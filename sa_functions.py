@@ -65,7 +65,34 @@ def getNominalList(list):
 ##########################################################
 ##########################################################
 
+""" 
+"""
+def getMinList(list):
+    
+    new_list = []
+    for p in list:        
+        new_list.append(float(p.getMin()))    
         
+    return new_list
+    
+##########################################################
+##########################################################
+##########################################################    
+
+""" 
+"""
+def getMaxList(list):
+    
+    new_list = []
+    for p in list:        
+        new_list.append(float(p.getMax()))    
+        
+    return new_list
+
+##########################################################
+##########################################################
+##########################################################  
+
 """
 Writes output effects into several files. For each analysed 
 input parameter a new file is created that contains effects
@@ -121,7 +148,7 @@ to a parameter list. For each parameter a name, the minimum
 and maximum value of range ist given.
 According to these parameter specification the SA will be done.
 """
-def readParameterFile(filename):
+def readParameterFile(filename, percentage = None):
     parameter_list = []
 
     print "Reading parameters from file: ", filename
@@ -134,10 +161,22 @@ def readParameterFile(filename):
             line_nr = line_nr + 1
             continue
 
-        if (len(line)>0):            
-            parameter = SAParameter(line[1],float(line[2]), float(line[3]),float(line[4]))
+        if (len(line)>0):        
+            # SAParameter (name, min, max, nominal)
+            parameter = None            
+            pmin= pmax = pnom = None
+            if (percentage == None):
+                pmin = float(line[2])
+                pmax = float(line[3])
+                pnom = float(line[4])
+            else:
+                pnom = float(line[4])
+                pmin = (1-percentage)*pnom
+                pmax = (1+percentage)*pnom
+                
+            parameter = SAParameter(line[1], pmin, pmax, pnom)
             parameter_list.append(parameter)
-            #parameter.display()
+            parameter.display()
         else:
             print "Error: Cannot read parameter file\"", filename, "\"\n", len(line), "\n", "Line:", line
             sys.exit(-1)

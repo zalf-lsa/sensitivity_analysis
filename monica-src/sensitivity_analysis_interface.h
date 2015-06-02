@@ -30,7 +30,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "tools/date.h"
 #include <src/monica.h>
 #include <src/monica-parameters.h>
-#include <src/debug.h>
+#include <tools/debug.h>
 
 namespace Monica 
 {
