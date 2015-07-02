@@ -31,7 +31,7 @@ class SAParameter:
         self.__distr = str(distr)
         
     def display(self):
-        print "SAParameter: ", self.__name, " [",self.__min, ";", self.__max, ";", self.__nominal, "]\t(", self.__mean, ", ", self.__std, ")"
+        print ("SAParameter: ", self.__name, " [",self.__min, ";", self.__max, ";", self.__nominal, "]\t(", self.__mean, ", ", self.__std, ")")
         
     def getMax(self):
         return self.__max

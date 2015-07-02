@@ -2,7 +2,7 @@
 # -*- coding: UTF-8-*-
 
 from saparameter import SAParameter
-import monica
+#import monica
 import sys
 import numpy
 import csv
@@ -72,7 +72,7 @@ input parameter a new file is created that contains effects
 for each simulation run. 
 """     
 def saveEffects(parameter_effects, parameter_list, output_path):
-    print "save parameter_effects", output_path
+    print ("save parameter_effects", output_path)
     #print parameter_effects
     output_names = getOutputNames()
     parameter_names = []
@@ -124,7 +124,7 @@ According to these parameter specification the SA will be done.
 def readParameterFile(filename):
     parameter_list = []
 
-    print "Reading parameters from file: ", filename
+    print ("Reading parameters from file: ", filename)
     parameter_file = csv.reader(open(filename,'r'), delimiter=';')
 
     line_nr = 0
@@ -139,7 +139,7 @@ def readParameterFile(filename):
             parameter_list.append(parameter)
             #parameter.display()
         else:
-            print "Error: Cannot read parameter file\"", filename, "\"\n", len(line), "\n", "Line:", line
+            print ("Error: Cannot read parameter file\"", filename, "\"\n", len(line), "\n", "Line:", line)
             sys.exit(-1)
     
     return parameter_list
@@ -156,7 +156,7 @@ According to these parameter specification the SA will be done.
 """
 def readNewParameterFile(filename, crop_id):
 
-    print "Reading new parameters from file: ", filename
+    print ("Reading new parameters from file: ", filename)
     
     p_file = open(filename,'r')
     parameter_file = csv.reader(p_file, delimiter=';')
@@ -185,7 +185,7 @@ def readNewParameterFile(filename, crop_id):
             #parameter.display()
     
     p_file.close()
-    print "Have read ", len(parameter_list), "parameters"
+    print ("Have read ", len(parameter_list), "parameters")
     return parameter_list
 
 ##########################################################
@@ -272,7 +272,7 @@ def get_optimised_trajectories(parameter_list, parameter_grid, start_vector_coun
 
   parameter_number = len(parameter_list)
 
-  print "Parameter_number:", parameter_number
+  print ("Parameter_number:", parameter_number)
 
   trajectories = []
   for traj_count in range(random_traj_count):
@@ -342,7 +342,7 @@ def find_trajectories_with_maximised_distance(trajectories, parameter_grid, para
   size = comm.Get_size()
   name = MPI.Get_processor_name()
 
-  print "Find trajectories with maximum distance"
+  print ("Find trajectories with maximum distance")
   traj_count = len(trajectories)
 
   parameter_distance_array = numpy.zeros((traj_count, traj_count))
@@ -355,7 +355,7 @@ def find_trajectories_with_maximised_distance(trajectories, parameter_grid, para
 
   local_list = comm.scatter(trajectory_list, root=0)    
     
-  print rank, "received: ", local_list
+  print (rank, "received: ", local_list)
 
   for m in range(local_list[0],traj_count):
     for l in local_list:##########################################################
@@ -398,11 +398,11 @@ def find_trajectories_with_maximised_distance(trajectories, parameter_grid, para
 
     # pick the trajectories with the most distance in between
     max_traj_indizes = []
-    print "search for max"
+    print ("search for max")
     while (len(max_traj_indizes)<start_vector_count):
       
       i,j = numpy.unravel_index(parameter_distance_array.argmax(), parameter_distance_array.shape)
-      print i,j
+      print (i,j)
       if (parameter_distance_array[i][j] == 0):
         break
 
@@ -411,12 +411,12 @@ def find_trajectories_with_maximised_distance(trajectories, parameter_grid, para
 
       if (i not in max_traj_indizes):
         max_traj_indizes.append(i)
-        print len(max_traj_indizes)
+        print (len(max_traj_indizes))
       if (j not in max_traj_indizes):
         max_traj_indizes.append(j)
-        print len(max_traj_indizes)
+        print (len(max_traj_indizes))
     
-    #print "MAX", max_traj_indizes
+    #print ("MAX", max_traj_indizes)
     
     
     for t in max_traj_indizes:
@@ -463,3 +463,124 @@ def getOperation(parameter_index, range_number, schrittweite):
             operation = ADDITION
 
     return operation
+
+######################################################
+######################################################
+######################################################
+
+"""
+Calculates savage scores the passed array
+"""
+def get_savage_score_array(r_array):
+
+    #print("Calc savage scores of parameter ranks")
+    
+    # number of different rankings
+    different_ranking_count = len(r_array[0])
+    
+    # initialise result array with zeroes
+    savage_score_array = numpy.zeros((r_array.shape))
+    
+    #print ("Found different rankings: ", different_ranking_count)
+
+    for rank_index in range(different_ranking_count):                
+        savage_score_array[:,rank_index] = calc_savage_scores(r_array[:,rank_index])        
+    
+    #print("\nSavage scores:\n", savage_score_array,"\n")    
+    return savage_score_array
+
+######################################################
+######################################################
+######################################################
+
+"""
+Calculates savage scores of a ranked list
+"""
+def calc_savage_scores(ranks):
+    
+    n=len(ranks)
+    savage_scores = []
+    
+    for rank in ranks:
+        savage = 0
+        
+        for j in range(int(rank), n+1):
+            savage += 1/j
+        
+        savage_scores.append(savage) 
+    
+    return savage_scores
+
+######################################################
+######################################################
+######################################################
+
+def calc_TDCC(rank_array):
+
+    # print("Calculation of TDCC")
+
+    # get savage scores
+    savage_score_array = get_savage_score_array (rank_array)       
+    # print(savage_score_array)
+
+    #########################################################
+    # formula extracted from "Iman, R.L., Conover, W.J. 1987: 
+    # A Measure of Top-Down-Correlation. Technometrics Vol.29 (3)"    
+    n = len(savage_score_array[:, 0])
+    b = len(savage_score_array[0])
+        
+    #print("Number of parameters:\t\t", n)
+    #print("Number of different rankings:\t", b)
+
+    sum_zaehler = 0
+    S1 = 0
+
+    for i in range(0,n):
+        Si = numpy.sum(savage_score_array[i])
+        sum_zaehler += Si**2         
+    
+        S1 += 1/(i+1)
+
+
+    zaehler = sum_zaehler - b**2*(n)
+    nenner = b**2 * (n-S1)
+
+    #print("S1:", S1)
+    #print("zaehler:", zaehler)
+    #print("nenner:", nenner)
+    
+    TDCC= zaehler/nenner
+
+    #print("TDCC:", TDCC)
+
+    return TDCC
+
+######################################################
+######################################################
+######################################################
+
+"""
+Analyse an array withranks and remove rows
+that all contains the highest ranks for all columns.
+"""
+def correct_array(array):
+
+    #print ("\nCorrect array")
+   
+    maximas = array.max(axis=0)
+    sum_maximas = numpy.sum(maximas)
+
+    new_array = []
+
+    for row in array:
+        sum_row = numpy.sum(row)
+        if (sum_row < sum_maximas):
+            new_array.append(list(row))
+
+    
+    new_array = numpy.array(new_array)
+
+    return new_array
+
+
+    
