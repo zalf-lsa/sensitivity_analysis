@@ -44,14 +44,14 @@ name = MPI.Get_processor_name()
 ranges = 20
 start_vector_count = 20
 random_start_vector_count = 500
-schrittweite = 6
+schrittweite = 5
 
 dx_fix = float(schrittweite) /  (float(ranges)-1)
 
 add_analyse_after_calculation = 1
 
 #
-parameter_files_directory = "../configs/2015-03-time-dependent-SA/parameters"
+parameter_files_directory = "../configs/2015-07-sapaper_agronomy/parameters"
 
 #
 simulation_files_path = "../configs/2015-03-time-dependent-SA/sites/"
@@ -59,7 +59,7 @@ simulation_files_path = "../configs/2015-03-time-dependent-SA/sites/"
 sites = ["Ascha"]
 
 #list that contains MONICA crop ids of the crops SA will be performed
-crops_to_analyse = [1]
+crops_to_analyse = [1,4,7,9,10,13]
 
 
 #############################################################################

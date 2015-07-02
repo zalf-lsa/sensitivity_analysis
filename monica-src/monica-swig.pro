@@ -47,8 +47,8 @@ CONFIG -= qt
 DEFINES  += COMPILE_DL=1
 
 
-QMAKE_CFLAGS += -I/usr/include/python2.6 
-QMAKE_CXXFLAGS += -I/usr/include/python2.6
+QMAKE_CFLAGS += -I/usr/include/python2.7 
+QMAKE_CXXFLAGS += -I/usr/include/python2.7
 
 # add flags to create profiling file
 QMAKE_CFLAGS_DEBUG += -pg -w
@@ -61,7 +61,7 @@ SWIG_FILES = monica.i
 
 
 
-LIBS += -lpython2.6
+LIBS += -lpython2.7
 
 
 
