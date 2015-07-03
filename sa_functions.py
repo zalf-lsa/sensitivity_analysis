@@ -1,9 +1,16 @@
 #!/usr/bin/python
 # -*- coding: UTF-8-*-
 
-from saparameter import SAParameter
-#import monica
 import sys
+
+
+# add path to monica module to PATH
+sys.path.append("..")
+sys.path.append("../monica-src")
+
+
+from saparameter import SAParameter
+import monica
 import numpy
 import csv
 import math

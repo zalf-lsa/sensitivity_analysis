@@ -16,8 +16,8 @@ OBJECTS_DIR = obj
 
 
 
-PROJECT_DIR = /home/specka/devel/github
-#PROJECT_DIR = /media/san1_data1/data1/specka/devel/github
+#PROJECT_DIR = /home/specka/devel/github
+PROJECT_DIR = /media/san1_data1/data1/specka/devel/github
 
 UTIL_DIR = $${PROJECT_DIR}/util
 MONICA_SRC = $${PROJECT_DIR}/monica
@@ -76,6 +76,8 @@ HEADERS += $${UTIL_DIR}/db/sqlite3.h
 
 HEADERS += $${UTIL_DIR}/tools/debug.h
 HEADERS += $${UTIL_DIR}/debug/conversion.h
+HEADERS += $${UTIL_DIR}/soil/constants.h
+HEADERS += $${UTIL_DIR}/soil/soil.h
 
 
 
@@ -84,6 +86,8 @@ SOURCES += $${UTIL_DIR}/db/abstract-db-connections.cpp
 SOURCES += $${UTIL_DIR}/db/sqlite3.c
 SOURCES += $${UTIL_DIR}/tools/debug.cpp
 SOURCES += $${UTIL_DIR}/soil/conversion.cpp
+SOURCES += $${UTIL_DIR}/soil/constants.cpp
+SOURCES += $${UTIL_DIR}/soil/soil.cpp
 
 # climate library code
 HEADERS += $${UTIL_DIR}/climate/climate-common.h
@@ -114,9 +118,10 @@ DSS|CCG|GIS:SOURCES += $${UTIL_DIR}/tools/coord-trans.cpp
 
 INCLUDEPATH += \
 $${PROJECT_DIR}/util \
-$${MONICA_SRC} \
-$${MONICA_SRC}/../boost_1_39_0 \
-$${MONICA_SRC}/../loki-lib/include
+$${MONICA_SRC} 
+
+# $${PROJECT_DIR}/boost_1_55_0 \
+# $${PROJECT_DIR}/loki-lib/include
 
 #libs
 #------------------------------------------------------------

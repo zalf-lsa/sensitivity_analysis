@@ -23,7 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "sensitivity_analysis_interface.h"
-#include <mutex>
+
 
 using namespace std;
 using namespace Monica;
@@ -151,6 +151,7 @@ Monica::applySAChanges(std::vector<ProductionProcess> ff,
     if (saps.crop_parameters.pc_StageTemperatureSum.size() > 0) {
       std::vector<double> new_values;
       for (unsigned int i=0; i<cps->pc_StageTemperatureSum.size(); i++) {
+          //cout << "C++ Apply: i " << i << "\t" <<  saps.crop_parameters.pc_StageTemperatureSum.at(i) << endl;
         double sa_value = saps.crop_parameters.pc_StageTemperatureSum.at(i);
         double default_value = cps->pc_StageTemperatureSum.at(i);
         if (sa_value == -9999) {
@@ -161,6 +162,11 @@ Monica::applySAChanges(std::vector<ProductionProcess> ff,
       }
 
       cps->pc_StageTemperatureSum = new_values;
+      
+      //for (int sum : new_values) {
+      //    cout << "TempSum: " << sum << endl;
+          
+      //  }
     }
 
     // pc_BaseTemperature
@@ -408,9 +414,9 @@ const vector<int>& Monica::sensitivityAnalysisResultIds()
   {
     primaryYield,                   // done
     biomassNContent,
-    aboveGroundBiomass,
+    //aboveGroundBiomass,
     aboveBiomassNContent,
-    avg0_90cmSoilMoisture,         // done
+    //avg0_90cmSoilMoisture,         // done
     mean90cmMonthlyAvgWaterContent, // done
     yearlySumGroundWaterRecharge,    
     yearlySumNLeaching,
@@ -421,7 +427,7 @@ const vector<int>& Monica::sensitivityAnalysisResultIds()
   };
 
   //static vector<int> v(ids, ids+2);
-  static vector<int> v(ids, ids+11);
+  static vector<int> v(ids, ids+9);
 
   return v;
 }
