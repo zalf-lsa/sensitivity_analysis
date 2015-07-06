@@ -36,3 +36,5 @@ monica-src/monica.py
 *.py~
 morris/runs
 *.*~
+
+e-fast/runs

@@ -159,11 +159,12 @@ def readParameterFile(filename, percentage = None):
     parameter_list = []
 
     print ("Reading parameters from file: ", filename)
-    parameter_file = csv.reader(open(filename,'r'), delimiter=';')
+    fp = open(filename, 'rU')
+    parameter_file = csv.reader(fp, delimiter=';')
 
     line_nr = 0
     for line in parameter_file: 
-        #print line, len(line)
+        print line, len(line)
         if (line_nr==0):
             line_nr = line_nr + 1
             continue
@@ -183,10 +184,12 @@ def readParameterFile(filename, percentage = None):
                 
             parameter = SAParameter(line[1], pmin, pmax, pnom)
             parameter_list.append(parameter)
-            parameter.display()
+            #parameter.display()
         else:
             print ("Error: Cannot read parameter file\"", filename, "\"\n", len(line), "\n", "Line:", line)
             sys.exit(-1)
+    
+    fp.close()
     
     return parameter_list
 
@@ -295,6 +298,7 @@ def getOutputId(output_list):
     name_map["dailyAGB"]    = "dailyAGB"
     name_map["dailyRoot"]   = "dailyRoot"
     name_map["devStage"] = "devStage"
+    name_map["aboveGroundBiomass"] = "aboveGroundBiomass"
 
 
 
@@ -308,6 +312,41 @@ def getOutputId(output_list):
                 output_id.append(r_id)
                 break
     return output_id
+    
+##########################################################
+##########################################################
+##########################################################
+
+class CropInfo:
+  def __init__(self, crop_id, name, parameter_file, simulation_files_dir=None):
+    self.crop_id = crop_id
+    self.name = name
+    self.parameter_file = parameter_file
+    self.simulation_files_dir = simulation_files_dir
+
+   
+##########################################################
+##########################################################
+##########################################################    
+    
+def getCropsForSA():
+
+  crop_map = {}
+  crop_map[1]   = CropInfo(1, "Winterweizen",   "parameter_definitions_winter_wheat.csv",     "winter-wheat/")
+  crop_map[19]  = CropInfo(19,"Wintertriticale","parameter_definitions_winter_triticale.csv", "winter-triticale/")
+  crop_map[2]   = CropInfo(2, "Wintergerste",   "parameter_definitions_winter_barley.csv",     "winter-barley/")
+  crop_map[9]   = CropInfo(9, "Winterraps",     "parameter_definitions_winter_rape.csv",      "winter-rape/")
+  crop_map[4]   = CropInfo(4, "Sommergerste",   "parameter_definitions_spring_barley.csv",    "spring-barley/")
+  crop_map[23]  = CropInfo(23,"Sommertriticale","parameter_definitions_spring_triticale.csv", "spring-triticale/")
+  crop_map[10]  = CropInfo(10,"Zuckerrübe",     "parameter_definitions_sugarbeet.csv",        "sugar-beet/")
+  crop_map[7]   = CropInfo(7, "Mais",           "parameter_definitions_maize.csv",            "maize/")
+  crop_map[18]  = CropInfo(18,"Sudangras",      "parameter_definitions_sudangras.csv",        "sudangras/")
+  crop_map[12]  = CropInfo(12,"Phacelia",       "parameter_definitions_phacelia.csv",         "phacelia/")
+  crop_map[13]  = CropInfo(13,"Kleegras",       "parameter_definitions_clover.csv",           "clover/")
+  crop_map[14]  = CropInfo(14,"Luzernegras",    "parameter_definitions_alfalfa.csv",          "alfalfa/")
+  crop_map[16]  = CropInfo(16,"Weidelgras",     "parameter_definitions_rye_grass.csv",        "rye_grass/")
+  crop_map[22]  = CropInfo(22,"Hafer",          "parameter_definitions_oat.csv",              "oat/")
+  return crop_map
 
 
 ##########################################################
