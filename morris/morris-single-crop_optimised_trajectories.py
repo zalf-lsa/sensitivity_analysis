@@ -42,7 +42,7 @@ name = MPI.Get_processor_name()
 # Configuration
 #############################################################################
 ranges = 20
-start_vector_count = 20
+start_vector_count = 40
 random_start_vector_count = 500
 schrittweite = 5
 
@@ -56,7 +56,7 @@ parameter_files_directory = "../configs/2015-07-sapaper_agronomy/parameters"
 #
 simulation_files_path = "../configs/2015-07-sapaper_agronomy/"
 
-sites = ["Ascha"]
+sites = ["Ascha", "Guelzow", "Werlte"]
 
 #list that contains MONICA crop ids of the crops SA will be performed
 crops_to_analyse = [1,4,7,9,10,13]
@@ -80,10 +80,6 @@ def mpi_main():
   for site in sites:
     
     output_dir = basis_output_dir + "/" + site + "/"
-
-
-    
-
 
     for crop_id in crops_to_analyse:
 
