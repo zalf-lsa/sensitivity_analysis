@@ -31,33 +31,6 @@
 30;po_ImmobilisationRateCoeffNO3;0.4;0.6;0.5
 31;po_ImmobilisationRateCoeffNH4;0.4;0.6;0.5
 32;pc_MaxCropNDemand;4.8;7.2;6
-33;po_NitrificationRateCoeffStandard;0.08;0.12;0.1
-34;po_TransportRateCoeff;0.08;0.12;0.1
-35;po_CN_Ratio_SMB;5.36;8.04;6.7
-36;vo_AOM_DryMatterContent;0.4;0.6;0.5
-37;vo_AOM_NH4Content;0.4;0.6;0.5
-38;vo_AOM_NO3Content;0.4;0.6;0.5
-39;vo_AOM_CarbamidContent;0.4;0.6;0.5
-40;vo_PartAOM_to_AOM_Slow;0.4;0.6;0.5
-41;vo_PartAOM_to_AOM_Fast;0.4;0.6;0.5
-42;vo_CN_Ratio_AOM_Slow;80;120;100
-43;vo_CN_Ratio_AOM_Fast;20;30;25
-44;po_SOM_SlowDecCoeffStandard;0.0000344;0.0000516;4.30E-05
-45;po_SOM_FastDecCoeffStandard;0.000112;0.000168;1.40E-04
-46;po_SMB_SlowMaintRateStandard;0.0008;0.0012;0.001
-47;po_SMB_FastMaintRateStandard;0.008;0.012;0.01
-48;po_SMB_SlowDeathRateStandard;0.0008;0.0012;0.001
-49;po_SMB_FastDeathRateStandard;0.008;0.012;0.01
-50;po_SMB_UtilizationEfficiency;0.48;0.72;0.6
-51;po_SOM_SlowUtilizationEfficiency;0.32;0.48;0.4
-52;po_SOM_FastUtilizationEfficiency;0.4;0.6;0.5
-53;po_AOM_SlowUtilizationEfficiency;0.32;0.48;0.4
-54;po_AOM_FastUtilizationEfficiency;0.32;0.48;0.4
-55;po_AOM_FastMaxC_to_N;800;1200;1000
-56;po_HydrolysisKM;0.002672;0.004008;0.00334
-57;po_HydrolysisP1;3.4072E-12;5.1108E-12;4.26E-12
-58;po_HydrolysisP2;1.1264E-12;1.6896E-12;1.41E-12
-59;pq_DiffusionCoefficientStandard;0.0001712;0.0002568;0.000214
 $60_1$ ;pc_StageTemperatureSum1;80;120;100
 $60_2$ ;pc_StageTemperatureSum2;240;360;300
 $60_3$ ;pc_StageTemperatureSum3;452;678;565

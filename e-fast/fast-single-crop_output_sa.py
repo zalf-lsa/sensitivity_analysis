@@ -10,15 +10,13 @@ import datetime
 import csv
 import os
 
-root_path = "../../.."
+# add path to monica module to PATH
 
+root_path = ".."
 
-###########################################################
-# adding the path of monica's python module to search path
-# that is defined by the environment variable PYTHONPATH
-sys.path.append(root_path + '/python')
-sys.path.append(root_path + '/python/lib')
-sys.path.append(root_path + '/python/sensitivity_analysis')
+sys.path.append("..")
+sys.path.append("../monica-src")
+
 
 
 import monica
@@ -38,19 +36,18 @@ name = MPI.Get_processor_name()
 
 #crops = [1, 2, 4, 7, 9, 10, 13, 14,18,19,12, 22,23,16]
 #crops = [12, 19, 22,23,16]
-crops = [1]
+crops = [1,4,7,9,10,13]
 
 #output_list = ["abBiom","rootBiomass","shootBiomass","leafBiomass","lai","GPP","Ra","abiomNContent","cropHeight","Eta","soilMoist","soilNmin","soilTemp","Corg"]
 #output_list = ["primYield", "abiomNContent","abBiom","rootBiomass","shootBiomass","leafBiomass","lai","GPP","Ra","Eta","soilMoist","soilNmin","soilTemp","Corg"]
 #output_list = ["soilNmin","soilTemp","Corg"]
-output_list = ["cropHeight"]
+output_list = ["aboveGroundBiomass"]
 
-output_id = sa_functions.getOutputId(output_list)
 
 max_omega = 4096
 sample_size = 20000
 
-parameters_path = "../parameters/dissertation/output_sa/fast-diss"
+parameters_path = "../configs/2015-07-sapaper_agronomy/parameters/fast_parameters"
 
 """ 
 ####################################################################
@@ -65,27 +62,28 @@ def mpi_main(crop):
       crop_map = sa_functions.getCropsForSA()
       crop_info = crop_map[crop]
       
-      directory = datetime.datetime.today().strftime("runs/2013-02-22/" + str(output))
-      output_path = root_path + "/python/sensitivity_analysis/fast/output/"
+      directory = datetime.datetime.today().strftime("runs/2015-07-06/" + str(output))
+      output_path = "runs/"
    
       # HERMES configuration
       simulation_path = getHermesSimulationPath(crop)
-      hermes_config = monica.getHermesConfig(simulation_path)
-      env = monica.getHermesEnv(hermes_config)
-
+      hermes_config = monica.getHermesConfigFromIni(simulation_path)
+      env = monica.getHermesEnvFromConfiguration(hermes_config)
+      env.setMode(monica.Env.MODE_SENSITIVITY_ANALYSIS)
+      
       if (rank == 0):
         if (not os.path.exists(directory)):  
           os.makedirs(directory) 
 
-      output_path = root_path + "/python/sensitivity_analysis/fast/output/" + directory
-      filename = parameters_path + "/" + output + ".csv"
+      output_path = root_path + "runs/" + directory
+      filename = parameters_path + "/" + crop_info.parameter_file 
 
       if (rank == 0):
-        if (not os.path.exists(directory+"/"+output)):  
-          os.makedirs(directory+"/"+output) 
+        if (not os.path.exists(directory+"/"+crop_info.simulation_files_dir)):  
+          os.makedirs(directory+"/"+ crop_info.simulation_files_dir) 
       
       # reads parameter specification from a file
-      complete_list = sa_functions.readParameterFile(filename) # original mc_parameter.txt    
+      complete_list = sa_functions.readParameterFile(filename)
       nominal_list = sa_functions.getNominalList(complete_list)
 
       max_param = len(complete_list)
@@ -124,8 +122,9 @@ def mpi_main(crop):
               new_env = applySAValues(complete_list, sample, env, crop)        
               monica.activateDebugOutput(0)
               result = monica.runMonica(new_env)       
-              #print result.getResultsById(output_id[output_index])         
-              value = sa_functions.getMeanOfList(result.getResultsById(output_id[output_index]))
+              #print result.getResultsById(output_id[output_index])       
+              
+              value = sa_functions.getMeanOfList(result.getResultsById(output_index))
               print value
               local_result_map[str(sample)] = value
 
@@ -220,7 +219,7 @@ def mpi_main(crop):
 def getHermesSimulationPath(crop_id):
   
 
-    path = "../sa_simulation/Ascha/"
+    path = "../configs/2015-07-sapaper_agronomy/Ascha/"
 
     crop_map = sa_functions.getCropsForSA()
     crop_info = crop_map[crop_id]
