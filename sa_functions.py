@@ -6,17 +6,21 @@ import sys
 
 # add path to monica module to PATH
 sys.path.append("..")
-sys.path.append("../monica-src")
+sys.path.append("D:/daten_specka/ZALF/devel/github/sensitivity_analysis/monica-src")
 
 
 from saparameter import SAParameter
-import monica
+#import monica
 import numpy
 import csv
 import math
 import random
 from mpi4py import MPI
 import mpi_helper
+import scipy.stats as ss
+import matplotlib.pyplot as plot
+from matplotlib.lines import Line2D
+from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 # constants definition
 ADDITION = 0
@@ -164,7 +168,7 @@ def readParameterFile(filename, percentage = None):
 
     line_nr = 0
     for line in parameter_file: 
-        print line, len(line)
+        print (line, len(line))
         if (line_nr==0):
             line_nr = line_nr + 1
             continue
@@ -645,7 +649,7 @@ def calc_TDCC(rank_array):
 ######################################################
 
 """
-Analyse an array withranks and remove rows
+Analyse an array with ranks and remove rows
 that all contains the highest ranks for all columns.
 """
 def correct_array(array):
@@ -653,12 +657,15 @@ def correct_array(array):
     #print ("\nCorrect array")
    
     maximas = array.max(axis=0)
+    #print("Maximas", maximas)
     sum_maximas = numpy.sum(maximas)
+    #print("sum_maximas", sum_maximas)
 
     new_array = []
 
     for row in array:
         sum_row = numpy.sum(row)
+        #print("sum_row: ", sum_row)
         if (sum_row < sum_maximas):
             new_array.append(list(row))
 
@@ -668,4 +675,68 @@ def correct_array(array):
     return new_array
 
 
+######################################################
+######################################################
+######################################################
+
+"""
+Creates an image with the visualisation of
+the TDCC matrix.
+"""    
+def save_tdcc_matrix_figure(tdcc_array, header, filename):
+
+    plot.rcParams['figure.subplot.left'] = 0.2
+    plot.rcParams['figure.subplot.right'] = 0.9
+    plot.rcParams['figure.subplot.bottom'] = 0.1
+    plot.rcParams['figure.subplot.top'] = 0.99
+    plot.rcParams['savefig.dpi'] = 200      # figure dots per inch
+    #plot.rcParams['figure.subplot.wspace'] = 0.6    # the amount of width reserved for blank space between subplots
+    #plot.rcParams['figure.subplot.hspace'] = 0.2    # the amount of height reserved for white space between subplots
+    plot.rcParams['legend.fontsize'] = 11
+    plot.rcParams['xtick.major.pad'] = 10
+    plot.rcParams['ytick.major.pad'] = 10
+    plot.rc('text', usetex=True)
+
+    width=5
+    height=4.5
+    font_size = 14
+
+    size =len(header)
+
+    fig = plot.figure(figsize=(width,height)) #,frameon=False
+    ax = fig.add_subplot(111)
+    #extent = -delta,len(crop_names)-delta, -delta, len(parameter_names)-delta
+    im1 = plot.imshow(tdcc_array, cmap=plot.cm.Greys,vmin=0.90, vmax=1.0 ) # gist_yarg    #plot.cm.Paired,  extent=extent,
+    im1.set_interpolation('none')
+
+    x_pos = range(0,size,1)
+    y_pos = range(0,size,1)
+    delta = 0.5
+
+    plot.xticks(x_pos, header, fontsize=font_size, rotation=45, ha='center')
+    plot.yticks(y_pos, header, fontsize=font_size, va='center')
+
+    ax.set_xlim(-delta, size-delta)
+    ax.set_ylim(-delta, size-delta)
+
+    for x in x_pos:
+        ax.axvline(x=x-delta, ls='solid', color='#ffffff', lw=1.5)
+    for y in y_pos:
+        ax.axhline(y=y-delta, ls='solid', color='#ffffff', lw=1.5)
+
+    # create an axes on the right side of ax. The width of cax will be 5%
+    # of ax and the padding between cax and ax will be fixed at 0.05 inch.
+    divider = make_axes_locatable(ax)
+    cax = divider.append_axes("right", size="5%", pad=0.1)
+
+    cbar = plot.colorbar(im1, cax=cax)
+    #cbar = plot.colorbar()
+    #cbar.set_clim(0, 1.0)
+    cbar.ax.set_title('TDCC', fontsize=10)
+    
+    cbar.ax.tick_params(labelsize=10) 
+    fig.savefig(filename, dpi_value=200)
+
+    del fig
+    del im1
     
