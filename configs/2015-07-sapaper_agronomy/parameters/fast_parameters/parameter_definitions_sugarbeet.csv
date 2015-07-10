@@ -1,1 +1,24 @@
-;;min;max;nom1;pc_MaxAssimilationRate;80;120;10014;pc_CanopyReflectionCoefficient;0.064;0.096;0.0821;pc_MaintenanceRespirationParameter1;0.064;0.096;0.0822;pc_MaintenanceRespirationParameter2;35.2;52.8;4423;pc_GrowthRespirationParameter1;0.08;0.12;0.124;pc_GrowthRespirationParameter2;30.4;45.6;38$60_1$ ;pc_StageTemperatureSum1;80;120;100$60_2$ ;pc_StageTemperatureSum2;240;360;300$60_3$ ;pc_StageTemperatureSum3;452;678;565$60_4$ ;pc_StageTemperatureSum4;486.4;729.6;608$65_1$;pc_SpecificLeafArea1;0.00072;0.00108;0.0009$65_2$;pc_SpecificLeafArea2;0.0008;0.0012;0.001$65_3$;pc_SpecificLeafArea3;0.0008;0.0012;0.001$65_4$;pc_SpecificLeafArea4;0.00072;0.00108;0.0009
+;;min;max;0.2
+1;pc_MaxAssimilationRate;80;120;100
+12;pc_MinimumAvailableN;0.0006;0.0009;0.00075
+14;pc_CanopyReflectionCoefficient;0.064;0.096;0.08
+21;pc_MaintenanceRespirationParameter1;0.064;0.096;0.08
+22;pc_MaintenanceRespirationParameter2;35.2;52.8;44
+23;pc_GrowthRespirationParameter1;0.08;0.12;0.1
+24;pc_GrowthRespirationParameter2;30.4;45.6;38
+26;pc_MinimumNConcentration;0.0032;0.0048;0.004
+27;pc_NConcentrationB0;1.104;1.656;1.38
+28;pc_NConcentrationPN;0.888;1.332;1.11
+$60_1$ ;pc_StageTemperatureSum1;80;120;100
+$60_2$ ;pc_StageTemperatureSum2;240;360;300
+$60_3$ ;pc_StageTemperatureSum3;452;678;565
+$60_4$ ;pc_StageTemperatureSum4;486.4;729.6;608
+$60_5$ ;pc_StageTemperatureSum5;1280;1920;1600
+$61_1$;pc_StageKcFactor1;0.32;0.48;0.4
+$61_2$;pc_StageKcFactor2;0.64;0.96;0.8
+$61_3$;pc_StageKcFactor3;0.8;1.2;1
+$61_4$;pc_StageKcFactor4;1.08;1.62;1.35
+$65_1$;pc_SpecificLeafArea1;0.00072;0.00108;0.0009
+$65_2$;pc_SpecificLeafArea2;0.0008;0.0012;0.001
+$65_3$;pc_SpecificLeafArea3;0.0008;0.0012;0.001
+$65_4$;pc_SpecificLeafArea4;0.00072;0.00108;0.0009
