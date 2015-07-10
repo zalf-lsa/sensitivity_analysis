@@ -43,6 +43,8 @@ crops = [1,4,7,9,10,13]
 #output_list = ["soilNmin","soilTemp","Corg"]
 output_list = ["aboveGroundBiomass"]
 
+sites = ["Ascha","Guelzow","Werlte"]
+
 
 max_omega = 4096
 sample_size = 20000
@@ -56,170 +58,171 @@ Main routine for parallel MPI execution
 """
 def mpi_main(crop):
     
-
+    
     for output_index, output in enumerate(output_list):
+      for site in sites:
 
-      crop_map = sa_functions.getCropsForSA()
-      crop_info = crop_map[crop]
-      
-      directory = datetime.datetime.today().strftime("runs/2015-07-06/" + str(output))
-      output_path = "runs/"
-   
-      # HERMES configuration
-      simulation_path = getHermesSimulationPath(crop)
-      hermes_config = monica.getHermesConfigFromIni(simulation_path)
-      env = monica.getHermesEnvFromConfiguration(hermes_config)
-      env.setMode(monica.Env.MODE_SENSITIVITY_ANALYSIS)
-      
-      if (rank == 0):
-        if (not os.path.exists(directory)):  
-          os.makedirs(directory) 
-
-      output_path = directory + "/" + crop_info.simulation_files_dir
-      filename = parameters_path + "/" + crop_info.parameter_file 
-
-      if (rank == 0):
-        if (not os.path.exists(output_path)):  
-          os.makedirs(output_path) 
-      
-      # reads parameter specification from a file
-      complete_list = sa_functions.readParameterFile(filename)
-      nominal_list = sa_functions.getNominalList(complete_list)
-
-      max_param = len(complete_list)
-      result_ids = monica.sensitivityAnalysisResultIds() 
-      env = applySAValues(complete_list, nominal_list, env, crop)     
-
-      if (rank==0):
-          tsi_filename = output_path + "/tsi-" + output + ".csv"
-          tsi_filehandle = open(tsi_filename, "w")
-          tsi_file = csv.writer(tsi_filehandle)
-          tsi_file.writerow(["Parameter", "FI", "TSI"])
-
-      # individual analysis for each parameter as proposed in Saltelli (2000)
-      for parameter_index, parameter in enumerate(complete_list):
-
-          print 2, parameter_index, parameter
-          all_node_list = []
+          crop_map = sa_functions.getCropsForSA()
+          crop_info = crop_map[crop]
+          
+          directory = datetime.datetime.today().strftime("runs/2015-07-10/crop-" + str(crop) + "/" + site)
+          output_path = "runs/"
+       
+          # HERMES configuration
+          simulation_path = getHermesSimulationPath(crop)
+          hermes_config = monica.getHermesConfigFromIni(simulation_path)
+          env = monica.getHermesEnvFromConfiguration(hermes_config)
+          env.setMode(monica.Env.MODE_SENSITIVITY_ANALYSIS)
+          
           if (rank == 0):
-              (all_node_list, sample_list) = initialise_parameter_value_list(complete_list, parameter_index)
+            if (not os.path.exists(directory)):  
+              os.makedirs(directory) 
 
-          t_morris_start = datetime.datetime.now()
-
-          print rank, "Start Parallel", datetime.datetime.now()
-          ###################################################
-          # parallel part
-          ##################################################
-          sample_list = comm.scatter(all_node_list, root=0)      
-
-          print rank, "Received local list ", parameter.getName() #, sample_list , 
-
-          #print rank, monica.resultIdInfo(output_id[output_index]).shortName
-
-          local_result_map = {}
-          for sample_index, sample in enumerate(sample_list):
-              print rank, sample_index, "/", len(sample_list), "\t",sample
-              new_env = applySAValues(complete_list, sample, env, crop)        
-              monica.activateDebugOutput(0)
-              result = monica.runMonica(new_env)       
-              #print result.getResultsById(output_id[output_index])       
-              
-              value = sa_functions.getMeanOfList(result.getResultsById(output_index))
-              print value
-              local_result_map[str(sample)] = value
-
-          ###################################################
-          # end of parallel part
-          ##################################################
-          result_list = comm.gather(local_result_map, root=0)   
-
-          t_parallel_end = datetime.datetime.now()
-          print rank, "end_parallel part", t_parallel_end, "parallel_part1:", t_parallel_end - t_morris_start
+          output_path = directory + "/" + crop_info.simulation_files_dir
+          filename = parameters_path + "/" + crop_info.parameter_file 
 
           if (rank == 0):
+            if (not os.path.exists(output_path)):  
+              os.makedirs(output_path) 
+          
+          # reads parameter specification from a file
+          complete_list = sa_functions.readParameterFile(filename)
+          nominal_list = sa_functions.getNominalList(complete_list)
 
+          max_param = len(complete_list)
+          result_ids = monica.sensitivityAnalysisResultIds() 
+          env = applySAValues(complete_list, nominal_list, env, crop)     
 
-              output_filename = output_path + "/" + parameter.getName() + ".csv"
-              csv_filehandle = open(output_filename, "wb")
-              csv_file = csv.writer(csv_filehandle)
-              names = []
-              for n in range(max_param):
-                  names.append(complete_list[n].getName())
-              names.append(output)
-              csv_file.writerow(names)
+          if (rank==0):
+              tsi_filename = output_path + "/tsi-" + output + ".csv"
+              tsi_filehandle = open(tsi_filename, "w")
+              tsi_file = csv.writer(tsi_filehandle)
+              tsi_file.writerow(["Parameter", "FI", "TSI"])
 
-              # iterate sequentially through sample list
-              v_input = []
-              for n in range(max_param):
-                  v_input.append([])
-              v_output = []    
-              for node_index, node in enumerate(all_node_list):
-                  for item in node:
-                      value = result_list[node_index][str(item)]     
-                      
-                      item.append(value)
-                      for n in range(max_param):
-                          v_input[n].append(item[n])
-                      if (value != None):
-                          #print item, value
-                          v_output.append(value)
-                          csv_file.writerow(item)
-                                         
-              csv_filehandle.close()
+          # individual analysis for each parameter as proposed in Saltelli (2000)
+          for parameter_index, parameter in enumerate(complete_list):
 
-              omegas = fast_lib.get_ts_frequencies(max_omega, parameter_index, max_param)
-              print omegas
+              print 2, parameter_index, parameter
+              all_node_list = []
+              if (rank == 0):
+                  (all_node_list, sample_list) = initialise_parameter_value_list(complete_list, parameter_index)
 
-              max_omega_o = int(max_omega/8)
+              t_morris_start = datetime.datetime.now()
 
-              # fast fourier transformation
-              fft = numpy.fft.fft(v_output)
-              real=numpy.real(fft)
-              imag= numpy.imag(fft)
-              A=numpy.add(numpy.multiply(real,real),numpy.multiply(imag,imag))
-              D_all = sum(A[1:])
+              print rank, "Start Parallel", datetime.datetime.now()
+              ###################################################
+              # parallel part
+              ##################################################
+              sample_list = comm.scatter(all_node_list, root=0)      
 
-              first_order = 0
-              tsi = 0
-              analysed_omegas = []
-              print "Analysing TSI for", names[parameter_index]
-              print "D_all", D_all
-              for index in range(max_param):
-                 
-                  harmonics = []
-                  for i in range(1,5):
-                      harmonics.append(omegas[index]*i)
+              print rank, "Received local list ", parameter.getName() #, sample_list , 
+
+              #print rank, monica.resultIdInfo(output_id[output_index]).shortName
+
+              local_result_map = {}
+              for sample_index, sample in enumerate(sample_list):
+                  print rank, sample_index, "/", len(sample_list), "\t",sample
+                  new_env = applySAValues(complete_list, sample, env, crop)        
+                  monica.activateDebugOutput(0)
+                  result = monica.runMonica(new_env)       
+                  #print result.getResultsById(output_id[output_index])       
                   
-                  D_i = 2*sum(A[harmonics])
-                  if (parameter_index == index):
-                      first_order = (D_i/D_all)
-                  else:
-                      if (omegas[index] not in analysed_omegas):
-                          tsi +=D_i
-                          print "Add first order of", names[index], "(", D_i,")",tsi,  omegas[index]
-                  analysed_omegas.append(omegas[index])
+                  value = sa_functions.getMaxOfList(result.getResultsById(output_index)) # original getMeanOfList
+                  print value
+                  local_result_map[str(sample)] = value
 
-              tmp_tsi = 2*sum(A[1:4*max_omega_o])
-              tsi = 1-(tmp_tsi/D_all)
+              ###################################################
+              # end of parallel part
+              ##################################################
+              result_list = comm.gather(local_result_map, root=0)   
 
-              if (parameter_index == 0):
-                  tsi_file.writerow([output, D_all, None])
+              t_parallel_end = datetime.datetime.now()
+              print rank, "end_parallel part", t_parallel_end, "parallel_part1:", t_parallel_end - t_morris_start
 
-              name = complete_list[parameter_index].getName()
-              tsi_file.writerow([name, first_order, tsi,tmp_tsi])
-              print "--------------------"
-              print "Seq time2", datetime.datetime.now() - t_parallel_end 
+              if (rank == 0):
 
 
-      if (rank==0):            
-          tsi_filehandle.close()                   
+                  output_filename = output_path + "/parameters/" + parameter.getName() + ".csv"
+                  csv_filehandle = open(output_filename, "wb")
+                  csv_file = csv.writer(csv_filehandle)
+                  names = []
+                  for n in range(max_param):
+                      names.append(complete_list[n].getName())
+                  names.append(output)
+                  csv_file.writerow(names)
+
+                  # iterate sequentially through sample list
+                  v_input = []
+                  for n in range(max_param):
+                      v_input.append([])
+                  v_output = []    
+                  for node_index, node in enumerate(all_node_list):
+                      for item in node:
+                          value = result_list[node_index][str(item)]     
+                          
+                          item.append(value)
+                          for n in range(max_param):
+                              v_input[n].append(item[n])
+                          if (value != None):
+                              #print item, value
+                              v_output.append(value)
+                              csv_file.writerow(item)
+                                             
+                  csv_filehandle.close()
+
+                  omegas = fast_lib.get_ts_frequencies(max_omega, parameter_index, max_param)
+                  print omegas
+
+                  max_omega_o = int(max_omega/8)
+
+                  # fast fourier transformation
+                  fft = numpy.fft.fft(v_output)
+                  real=numpy.real(fft)
+                  imag= numpy.imag(fft)
+                  A=numpy.add(numpy.multiply(real,real),numpy.multiply(imag,imag))
+                  D_all = sum(A[1:])
+
+                  first_order = 0
+                  tsi = 0
+                  analysed_omegas = []
+                  print "Analysing TSI for", names[parameter_index]
+                  print "D_all", D_all
+                  for index in range(max_param):
+                     
+                      harmonics = []
+                      for i in range(1,5):
+                          harmonics.append(omegas[index]*i)
+                      
+                      D_i = 2*sum(A[harmonics])
+                      if (parameter_index == index):
+                          first_order = (D_i/D_all)
+                      else:
+                          if (omegas[index] not in analysed_omegas):
+                              tsi +=D_i
+                              print "Add first order of", names[index], "(", D_i,")",tsi,  omegas[index]
+                      analysed_omegas.append(omegas[index])
+
+                  tmp_tsi = 2*sum(A[1:4*max_omega_o])
+                  tsi = 1-(tmp_tsi/D_all)
+
+                  if (parameter_index == 0):
+                      tsi_file.writerow([output, D_all, None])
+
+                  name = complete_list[parameter_index].getName()
+                  tsi_file.writerow([name, first_order, tsi,tmp_tsi])
+                  print "--------------------"
+                  print "Seq time2", datetime.datetime.now() - t_parallel_end 
+
+
+          if (rank==0):            
+              tsi_filehandle.close()                   
 
                         
         
-def getHermesSimulationPath(crop_id):
+def getHermesSimulationPath(crop_id, site):
   
 
-    path = "../configs/2015-07-sapaper_agronomy/Ascha/"
+    path = "../configs/2015-07-sapaper_agronomy/" + site + "/"
 
     crop_map = sa_functions.getCropsForSA()
     crop_info = crop_map[crop_id]
