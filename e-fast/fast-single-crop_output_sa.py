@@ -75,12 +75,12 @@ def mpi_main(crop):
         if (not os.path.exists(directory)):  
           os.makedirs(directory) 
 
-      output_path = root_path + "runs/" + directory
+      output_path = directory + "/" + crop_info.simulation_files_dir
       filename = parameters_path + "/" + crop_info.parameter_file 
 
       if (rank == 0):
-        if (not os.path.exists(directory+"/"+crop_info.simulation_files_dir)):  
-          os.makedirs(directory+"/"+ crop_info.simulation_files_dir) 
+        if (not os.path.exists(output_path)):  
+          os.makedirs(output_path) 
       
       # reads parameter specification from a file
       complete_list = sa_functions.readParameterFile(filename)
@@ -91,8 +91,8 @@ def mpi_main(crop):
       env = applySAValues(complete_list, nominal_list, env, crop)     
 
       if (rank==0):
-          tsi_filename = directory + "/tsi-" + output + ".csv"
-          tsi_filehandle = open(tsi_filename, "wb")
+          tsi_filename = output_path + "/tsi-" + output + ".csv"
+          tsi_filehandle = open(tsi_filename, "w")
           tsi_file = csv.writer(tsi_filehandle)
           tsi_file.writerow(["Parameter", "FI", "TSI"])
 
@@ -139,7 +139,7 @@ def mpi_main(crop):
           if (rank == 0):
 
 
-              output_filename = directory + "/" + output + "/" + parameter.getName() + ".csv"
+              output_filename = output_path + "/" + parameter.getName() + ".csv"
               csv_filehandle = open(output_filename, "wb")
               csv_file = csv.writer(csv_filehandle)
               names = []

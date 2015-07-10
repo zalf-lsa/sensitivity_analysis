@@ -164,7 +164,7 @@ def readParameterFile(filename, percentage = None):
 
     line_nr = 0
     for line in parameter_file: 
-        print line, len(line)
+        # print line, len(line)
         if (line_nr==0):
             line_nr = line_nr + 1
             continue
@@ -264,6 +264,16 @@ Returns last element of a list
 def getMeanOfList(list): 
     if (len(list)>0):   
         return numpy.mean(list)
+    else:
+        return None
+
+##########################################################
+##########################################################
+##########################################################
+
+def getMaxOfList(list):
+    if (len(list)>0):
+        return numpy.max(list)
     else:
         return None
 
