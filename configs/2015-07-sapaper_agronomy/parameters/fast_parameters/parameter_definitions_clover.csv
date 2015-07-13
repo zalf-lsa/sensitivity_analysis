@@ -1,27 +1,23 @@
-;;min;max;0.2
-1;pc_MaxAssimilationRate;36;54;45
-12;pc_MinimumAvailableN;0.0006;0.0009;0.00075
-14;pc_CanopyReflectionCoefficient;0.064;0.096;0.08
-21;pc_MaintenanceRespirationParameter1;0.064;0.096;0.08
-22;pc_MaintenanceRespirationParameter2;35.2;52.8;44
-23;pc_GrowthRespirationParameter1;0.08;0.12;0.1
-24;pc_GrowthRespirationParameter2;30.4;45.6;38
-26;pc_MinimumNConcentration;0.004;0.006;0.005
-27;pc_NConcentrationB0;0;0;0
-28;pc_NConcentrationPN;2.08;3.12;2.6
-$60_1$ ;pc_StageTemperatureSum1;32;48;40
-$60_2$ ;pc_StageTemperatureSum2;227.2;340.8;284
-$60_3$ ;pc_StageTemperatureSum3;160;240;200
-$60_4$ ;pc_StageTemperatureSum4;320;480;400
-$60_5$ ;pc_StageTemperatureSum5;280;420;350
-$61_1$;pc_StageKcFactor1;0.48;0.72;0.6
-$61_2$;pc_StageKcFactor2;0.72;1.08;0.9
-$61_3$;pc_StageKcFactor3;0.744;1.116;0.93
-$61_4$;pc_StageKcFactor4;0.744;1.116;0.93
-$64_2$;pc_DaylengthRequirement2;16;24;20
-$64_3$;pc_DaylengthRequirement3;16;24;20
-$64_4$;pc_DaylengthRequirement4;16;24;20
-$65_1$;pc_SpecificLeafArea1;0.0016;0.0024;0.002
-$65_2$;pc_SpecificLeafArea2;0.0016;0.0024;0.002
-$65_3$;pc_SpecificLeafArea3;0.0016;0.0024;0.002
-$65_4$;pc_SpecificLeafArea4;0.0016;0.0024;0.002
+;;min;max;0.3
+1;pc_MaxAssimilationRate;31.5;58.5;45
+14;pc_CanopyReflectionCoefficient;0.056;0.104;0.08
+21;pc_MaintenanceRespirationParameter1;0.07;0.09;0.08
+22;pc_MaintenanceRespirationParameter2;43;45;44
+23;pc_GrowthRespirationParameter1;0.09;0.11;0.1
+24;pc_GrowthRespirationParameter2;37;39;38
+$60_1$ ;pc_StageTemperatureSum1;28;52;40
+$60_2$ ;pc_StageTemperatureSum2;198.8;369.2;284
+$60_3$ ;pc_StageTemperatureSum3;140;260;200
+$60_4$ ;pc_StageTemperatureSum4;280;520;400
+$60_5$ ;pc_StageTemperatureSum5;245;455;350
+$61_1$;pc_StageKcFactor1;0.42;0.78;0.6
+$61_2$;pc_StageKcFactor2;0.63;1.17;0.9
+$61_3$;pc_StageKcFactor3;0.651;1.209;0.93
+$61_4$;pc_StageKcFactor4;0.651;1.209;0.93
+$64_2$;pc_DaylengthRequirement2;14;26;20
+$64_3$;pc_DaylengthRequirement3;14;26;20
+$64_4$;pc_DaylengthRequirement4;14;26;20
+$65_1$;pc_SpecificLeafArea1;0.0014;0.0026;0.002
+$65_2$;pc_SpecificLeafArea2;0.0014;0.0026;0.002
+$65_3$;pc_SpecificLeafArea3;0.0014;0.0026;0.002
+$65_4$;pc_SpecificLeafArea4;0.0014;0.0026;0.002
