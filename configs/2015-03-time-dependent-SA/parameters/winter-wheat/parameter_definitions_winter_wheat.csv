@@ -14,9 +14,6 @@ No;Parametername;min;max;nominal;table;0.3
 13;pc_CropHeightP1;4.2;7.8;6;crop;
 14;pc_CropHeightP2;0.35;0.65;0.5;crop;
 15;pc_ResidueNRatio;0.35;0.65;0.5;crop;
-16;pc_SamplingDepth;0.63;1.17;0.9;crop;
-17;pc_TargetNSamplingDepth;161;299;230;crop;
-18;pc_TargetN30;84;156;120;crop;
 19;pc_DefaultRadiationUseEfficiency;0.35;0.65;0.5;crop;
 20;pc_MaxCropDiameter;0.0035;0.0065;0.005;crop;
 21;pc_StageAtMaxDiameter;1.4;2.6;2;crop;
