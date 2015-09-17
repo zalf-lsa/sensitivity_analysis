@@ -35,7 +35,8 @@ name = MPI.Get_processor_name()
 crops = [1]
 
 
-output_list = ["primaryYield"]      #,"dailyAGB", "dailyAGB_N","ETa","soilMoist0_90cm","nmin0_90cm"]
+output_list = [ ["primaryYield", "parameter_definitions_winter_wheat-primyield.csv"]
+                ]                #,"dailyAGB", "dailyAGB_N","ETa","soilMoist0_90cm","nmin0_90cm"]
 
 #sites = ["Ascha","Dornburg","Ettlingen""Guelzow","Werlte"]
 sites = ["Ascha"]
@@ -53,7 +54,9 @@ Main routine for parallel MPI execution
 def mpi_main(crop):
     
 
-    for output_index, output in enumerate(output_list):
+    for output_index, output_info in enumerate(output_list):
+        output = output_info[0]
+        parameter_filename = output_info[1]
         for site in sites:
 
           crop_map = sa_functions.getCropsForSA()
@@ -73,7 +76,7 @@ def mpi_main(crop):
               os.makedirs(directory) 
 
           output_path = directory + "/" + crop_info.simulation_files_dir
-          filename = parameters_path + "/" + crop_info.parameter_file 
+          filename = parameters_path + "/" + parameter_filename
 
           if (rank == 0):
             if (not os.path.exists(directory)):  
