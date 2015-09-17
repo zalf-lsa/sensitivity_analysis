@@ -6,11 +6,12 @@ import sys
 
 # add path to monica module to PATH
 sys.path.append("..")
-sys.path.append("D:/daten_specka/ZALF/devel/github/sensitivity_analysis/monica-src")
+sys.path.append("../monica-src")
+# sys.path.append("D:/daten_specka/ZALF/devel/github/sensitivity_analysis/monica-src")
 
 
 from saparameter import SAParameter
-#import monica
+import monica
 import numpy
 import csv
 import math

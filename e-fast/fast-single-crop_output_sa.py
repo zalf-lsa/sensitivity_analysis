@@ -65,20 +65,22 @@ def mpi_main(crop):
           crop_map = sa_functions.getCropsForSA()
           crop_info = crop_map[crop]
           
-          directory = datetime.datetime.today().strftime("runs/2015-07-10/crop-" + str(crop) + "/" + site)
+          directory = datetime.datetime.today().strftime("runs/2015-07-13/crop-" + str(crop) + "/" + site)
           output_path = "runs/"
        
           # HERMES configuration
-          simulation_path = getHermesSimulationPath(crop)
+          simulation_path = getHermesSimulationPath(crop, site)
           hermes_config = monica.getHermesConfigFromIni(simulation_path)
           env = monica.getHermesEnvFromConfiguration(hermes_config)
           env.setMode(monica.Env.MODE_SENSITIVITY_ANALYSIS)
           
           if (rank == 0):
             if (not os.path.exists(directory)):  
-              os.makedirs(directory) 
+              os.makedirs(directory)
+            if (not os.path.exists(directory + "/parameters")):
+              os.makedirs(directory + "/parameters") 
 
-          output_path = directory + "/" + crop_info.simulation_files_dir
+          output_path = directory  
           filename = parameters_path + "/" + crop_info.parameter_file 
 
           if (rank == 0):
