@@ -1,5 +1,5 @@
 Tp_av	Tpmin	Tpmax	T_s10	T_s20	vappd	wind	sundu	radia	prec	tagesnummer	RF
-C_deg	C_deg	C_deg	C_deg	C_deg	mm_Hg	m/se	hours	J/cmı	mm	jday	%
+C_deg	C_deg	C_deg	C_deg	C_deg	mm_Hg	m/se	hours	J/cm	mm	jday	%
 50	-----	-----	-----	-----	-----	2m	-----	------	--	0	0
 1.4	0.2	2.8	0	0	0	1.5	0	70.9	0.37	1	92.2
 0.3	-1.7	2.5	0	0	0	1.4	0	155.8	0.12	2	88.1

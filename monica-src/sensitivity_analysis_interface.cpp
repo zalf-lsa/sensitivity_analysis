@@ -412,22 +412,24 @@ const vector<int>& Monica::sensitivityAnalysisResultIds()
 {
   static ResultId ids[] =
   {
-    //primaryYield,                   // done
+    primaryYield,                   // done
     //biomassNContent,
-    aboveGroundBiomass
+    //aboveGroundBiomass
     //aboveBiomassNContent,
-    //avg0_90cmSoilMoisture,         // done
-    //mean90cmMonthlyAvgWaterContent, // done
-    //yearlySumGroundWaterRecharge,    
-    //yearlySumNLeaching,
-    //sum90cmYearlyNatDay,
     //sumETaPerCrop,                  // done
-    //avg30cmMonthlyAvgCorg
-    
+    //soilMoist0_90cmAtHarvest,
+    //corg0_30cmAtHarvest,
+    //nmin0_90cmAtHarvest
+    dailyAGB,
+    dailyAGB_N,
+    ETa,
+    soilMoist0_90cm,
+    //corg0_30cm,
+    nmin0_90cm
   };
 
-  //static vector<int> v(ids, ids+2);
-  static vector<int> v(ids, ids+1);
+  static vector<int> v(ids, ids+6);
+  //static vector<int> v(ids, ids+1);
 
   return v;
 }

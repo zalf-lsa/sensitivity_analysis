@@ -1,0 +1,11 @@
+No;Parametername;min;max;nominal;table;0.3
+1;pc_MaxAssimilationRate;36.4;67.6;52;crop;
+$44_3-3$;pc_AssimilatePartitioningDevStage3Organ3;0.469;0.871;0.67;crop2ods_dependent_param;
+$56_3$;pc_OrganMaintenanceRespiration3;0.105;0.195;0.15;organ;
+$62_1$;pc_MaintenanceRespirationParameter1;0.07;0.09;0.08;user_parameter;
+$45_3$;pc_StageTemperatureSum3;266;494;380;dev_stage;
+$49_3$;pc_DaylengthRequirement3;14;26;20;dev_stage;
+34;pc_LimitingTemperatureHeatStress;28;52;40;crop;
+35;pc_BeginSensitivePhaseHeatStress;434;806;620;crop;
+36;pc_EndSensitivePhaseHeatStress;518;962;740;crop;
+39;pc_LT50cultivar;-16.8;-31.2;-24;crop;

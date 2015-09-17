@@ -14,15 +14,14 @@ import analysing_lib
 
 treshold_mu=0.1
 
-width=4
-height=4
+path = "D:/daten_specka/ZALF/publications/articles/2015-Time-dependent-SA/data/morris/runs/2015-09-14_10-51-12/Werlte/"
+
 
 path = "../morris/runs/TDSA-Morris2-0.1/"
 
 sites = ["Ascha", "Dornburg","Ettlingen","Guelzow","Werlte"]
 
-
-infos = ["crop-Winter wheat-min-step6_range20_startvector20", "Winterweizen"]
+infos = ["crop-Winter wheat-min-step5_range20_startvector40", "Winterweizen"]
 
 
 def main():
@@ -36,8 +35,8 @@ def main():
     directory = infos[0]
     crop_name = infos[1]
 
-    print
-    print crop_name
+    print ()
+    print (crop_name)
     
 
     for site in sites:
@@ -113,7 +112,7 @@ def scale_parameter_effects(parameter_map, max_index):
     for item_index in range(2,max_index):
         names = []
         mu_list = []
-        for pname, plist in parameter_map.iteritems():
+        for pname, plist in parameter_map.items():
 
             if (pname not in scaled_parameter_map):        
                 scaled_list = plist[0:2]
@@ -124,6 +123,7 @@ def scale_parameter_effects(parameter_map, max_index):
             mu = float(plist[item_index])
             mu_list.append(mu)
 
+        print ("MAX:", max(mu_list))
         mu_list= np.divide(mu_list, max(mu_list))   
 
         for name_index, name in enumerate(names):
@@ -135,7 +135,7 @@ def scale_parameter_effects(parameter_map, max_index):
 
             scaled_parameter_map[name] = scaled_list
             
-        print
+        print ()
     return scaled_parameter_map
 
 ########################################################

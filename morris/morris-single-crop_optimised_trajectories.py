@@ -50,16 +50,26 @@ dx_fix = float(schrittweite) /  (float(ranges)-1)
 
 add_analyse_after_calculation = 1
 
-#
-parameter_files_directory = "../configs/2015-07-sapaper_agronomy/parameters"
+###########################################################################
+# configuration for SA paper rev 1 (European Journal of Agronomy)
+###########################################################################
+#parameter_files_directory = "../configs/2015-07-sapaper_agronomy/parameters"
+#simulation_files_path = "../configs/2015-07-sapaper_agronomy/"
+#sites = ["Ascha", "Guelzow", "Werlte"]
+#crops_to_analyse = [1,4,7,9,10,13] # [1,4,7,9,10,13]
+###########################################################################
 
-#
-simulation_files_path = "../configs/2015-07-sapaper_agronomy/"
 
-sites = ["Ascha", "Guelzow", "Werlte"]
+###########################################################################
+# configuration for time-dependent SA paper
+###########################################################################
+parameter_files_directory = "../configs/2015-03-time-dependent-SA/parameters"
+simulation_files_path = "../configs/2015-03-time-dependent-SA/sites/"
+sites = ["Ascha", "Dornburg", "Ettlingen", "Guelzow", "Werlte"]
+crops_to_analyse=[1]
+###########################################################################
 
-#list that contains MONICA crop ids of the crops SA will be performed
-crops_to_analyse = [1,4,7,9,10,13]
+
 
 
 #############################################################################
@@ -327,15 +337,9 @@ def analyseResults(result_old, result_new, parameter_index, dx, outputs, paramet
     index = 0
     for id in result_ids:
         
-        #old = sa_functions.lastElement(result_old.getResultsById(id))
-        #new = sa_functions.lastElement(result_new.getResultsById(id))
       #print monica.resultIdInfo(id).shortName
       old = sa_functions.getMeanOfList(result_old.getResultsById(id))
       new = sa_functions.getMeanOfList(result_new.getResultsById(id))
-      #print monica.resultIdInfo(id).shortName, new
-      #old = numpy.sum(result_old.getResultsById(id))
-#      new = numpy.sum(result_new.getResultsById(id))    
- #     print monica.resultIdInfo(id).shortName, new
       if (sa_functions.is_nan(old) or 
           sa_functions.is_inf(old) or 
           sa_functions.is_nan(new) or 

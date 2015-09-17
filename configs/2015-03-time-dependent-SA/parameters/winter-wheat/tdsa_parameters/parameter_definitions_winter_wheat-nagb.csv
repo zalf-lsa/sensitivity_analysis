@@ -1,0 +1,10 @@
+No;Parametername;min;max;nominal;table;0.3
+1;pc_MaxAssimilationRate;36.4;67.6;52;crop;
+$54_1$;pc_SpecificLeafArea1;0.0014;0.0026;0.002;dev_stage;
+$56_3$;pc_OrganMaintenanceRespiration3;0.105;0.195;0.15;organ;
+$45_1$;pc_StageTemperatureSum1;103.6;192.4;148;dev_stage;
+$48_2$;pc_VernalisationRequirement2;35;65;50;dev_stage;
+10;pc_LuxuryNCoeff;0.91;1.69;1.3;crop;
+5;pc_NConcentrationPN;1.12;2.08;1.6;crop;
+65;pc_MinimumAvailableN;0.00056;0.00104;0.0008;user_parameter;
+39;pc_LT50cultivar;-16.8;-31.2;-24;crop;

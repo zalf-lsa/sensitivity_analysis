@@ -314,6 +314,12 @@ def getOutputId(output_list):
     name_map["dailyAGB"]    = "dailyAGB"
     name_map["dailyRoot"]   = "dailyRoot"
     name_map["devStage"] = "devStage"
+    
+    name_map["primaryYield"] = "primaryYield"
+    name_map["dailyAGB_N"] = "dailyAGB_N"
+    name_map["ETa"] = "ETa"
+    name_map["soilMoist0_90cm"] = "soilMoist0_90cm"
+    name_map["nmin0_90cm"] = "nmin0_90cm"
     name_map["aboveGroundBiomass"] = "aboveGroundBiomass"
 
 
@@ -719,7 +725,7 @@ def save_tdcc_matrix_figure(tdcc_array, header, filename):
     fig = plot.figure(figsize=(width,height)) #,frameon=False
     ax = fig.add_subplot(111)
     #extent = -delta,len(crop_names)-delta, -delta, len(parameter_names)-delta
-    im1 = plot.imshow(tdcc_array, cmap=plot.cm.Greys,vmin=0.90, vmax=1.0 ) # gist_yarg    #plot.cm.Paired,  extent=extent,
+    im1 = plot.imshow(tdcc_array, cmap=plot.cm.Greys,vmin=0.5, vmax=1.0 ) # gist_yarg    #plot.cm.Paired,  extent=extent,
     im1.set_interpolation('none')
 
     x_pos = range(0,size,1)
@@ -742,7 +748,7 @@ def save_tdcc_matrix_figure(tdcc_array, header, filename):
     divider = make_axes_locatable(ax)
     cax = divider.append_axes("right", size="5%", pad=0.1)
 
-    cbar = plot.colorbar(im1, cax=cax)
+    cbar = plot.colorbar(im1, cax=cax,ticks=[0.5,0.6,0.7,0.8,0.9,1.0])
     #cbar = plot.colorbar()
     #cbar.set_clim(0, 1.0)
     cbar.ax.set_title('TDCC', fontsize=10)
