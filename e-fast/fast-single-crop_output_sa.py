@@ -21,7 +21,7 @@ sys.path.append("../monica-src")
 
 import monica
 from monica_simulation import initializeMonicaSimulation
-from monica_simulation import initializeEVA2MonicaSimulation
+
 from saparameter import SAParameter
 from apply_sa_values import applySAValues
 import sa_functions 

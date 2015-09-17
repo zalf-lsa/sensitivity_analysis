@@ -14,15 +14,12 @@ import analysing_lib
 
 xlim=0.02
 
-width=4
-height=4
 
 path = "../morris/runs/TDSA-2015-03-20/Ascha/"
 
 
 folders = [["crop-Winter wheat-min-step6_range20_startvector20", "Winterweizen"]]
 
-m_color = "#c85a2e"
 
 def main():
 

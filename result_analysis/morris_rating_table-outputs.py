@@ -14,13 +14,10 @@ import analysing_lib
 
 treshold_mu=0.02
 
-width=4
-height=4
-
-path = "../morris/runs/TDSA-2015-03-20/Ascha/"
+path = "D:/daten_specka/ZALF/publications/articles/2015-Time-dependent-SA/data/morris/runs/2015-09-14_10-51-12/Werlte/"
 
 
-infos = ["crop-Winter wheat-min-step6_range20_startvector20", "Winterweizen"]
+infos = ["crop-Winter wheat-min-step5_range20_startvector40", "Winterweizen"]
 
 
 def main():
@@ -34,11 +31,11 @@ def main():
     directory = infos[0]
     crop_name = infos[1]
 
-    print
-    print crop_name
+    print ()
+    print (crop_name)
     
   
-    mean_file = open(path + directory + "/morris_mean.txt", "rb")
+    mean_file = open(path + directory + "/morris_mean.txt", "r")
     mean_csv = csv.reader(mean_file, delimiter="\t")
 
     row_no = 0
@@ -70,16 +67,16 @@ def main():
 
                         tlist = [pno, pname]
                         tlist.extend(list(np.zeros(len(mean)-1)))
-                        print "Adding new list to map", pname, tlist
+                        #print ("Adding new list to map", pname, tlist)
                         parameter_map[pname] = tlist
                         name.append(str(parameter_name_map[fname].name))
                         no.append(str(parameter_name_map[fname].no))
                 else:            
-                    print item
+                    #print (item)
                     # get SA values for each output
    
                     tlist = parameter_map[pname]
-                    print tlist, len(tlist), item_index+1
+                    #print (tlist, len(tlist), item_index+1)
                     tlist[item_index+1] = float(item)
                     parameter_map[pname] = tlist
             
@@ -90,13 +87,29 @@ def main():
 
 
     scaled_parameter_map = scale_parameter_effects(parameter_map, len(mean)+1)
-
-    csv_file = open(path + directory + "/" + "morris_ranking.csv", 'wb')
-    csv_writer = csv.writer(csv_file, delimiter='&')
+    print ("OUTPUT:", path + directory + "/" + "morris_ranking.csv")
+    csv_file = open(path + directory + "/" + "morris_ranking.csv", 'w')
+    csv_writer = csv.writer(csv_file, delimiter='&', lineterminator='\n')
     csv_writer.writerow(header)
 
-    for pname, plist in scaled_parameter_map.iteritems():
-        csv_writer.writerow(plist)
+    keys = scaled_parameter_map.keys()
+    
+    parameter_number_list = []
+    for key in keys:
+    # for pname, plist in scaled_parameter_map.items():
+        pno = scaled_parameter_map[key][0]        
+        parameter_number_list.append(pno)
+        
+    sorted_pno_list = sorted(parameter_number_list)
+    
+    for pno in sorted_pno_list:
+        for key in keys:
+            plist = scaled_parameter_map[key]
+            if (pno == plist[0]):
+                csv_writer.writerow(plist)
+        
+        
+        
 
     csv_file.close()
 
@@ -109,7 +122,7 @@ def scale_parameter_effects(parameter_map, max_index):
     for item_index in range(2,max_index):
         names = []
         mu_list = []
-        for pname, plist in parameter_map.iteritems():
+        for pname, plist in parameter_map.items():
 
             if (pname not in scaled_parameter_map):        
                 scaled_list = plist[0:2]
@@ -120,6 +133,7 @@ def scale_parameter_effects(parameter_map, max_index):
             mu = float(plist[item_index])
             mu_list.append(mu)
 
+        print ("MAX:", max(mu_list))
         mu_list= np.divide(mu_list, max(mu_list))   
 
         for name_index, name in enumerate(names):
@@ -131,7 +145,7 @@ def scale_parameter_effects(parameter_map, max_index):
 
             scaled_parameter_map[name] = scaled_list
             
-        print
+        print ()
     return scaled_parameter_map
 
 ########################################################
