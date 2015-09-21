@@ -313,7 +313,7 @@ def getOutputId(output_list):
     name_map["dailyPrimYield"] = "dailyPrimYield"
     name_map["dailyAGB"]    = "dailyAGB"
     name_map["dailyRoot"]   = "dailyRoot"
-    name_map["devStage"] = "devStage"
+    name_map["dev_stage"] = "devStage"
     
     name_map["primaryYield"] = "primaryYield"
     name_map["dailyAGB_N"] = "dailyAGB_N"

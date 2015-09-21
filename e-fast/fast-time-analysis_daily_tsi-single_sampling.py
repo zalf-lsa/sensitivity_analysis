@@ -35,14 +35,25 @@ name = MPI.Get_processor_name()
 crops = [1]
 
 
-output_list = [ ["primaryYield", "parameter_definitions_winter_wheat-primyield.csv"]
-                ]                #,"dailyAGB", "dailyAGB_N","ETa","soilMoist0_90cm","nmin0_90cm"]
+output_list = [ [ "primaryYield",    "parameter_definitions_winter_wheat-primyield.csv"],
+                [ "dailyAGB",        "parameter_definitions_winter_wheat-agb.csv"],
+                [ "dailyAGB_N",      "parameter_definitions_winter_wheat-nagb.csv"],
+                [ "ETa",             "parameter_definitions_winter_wheat-eta.csv"],
+                [ "soilMoist0_90cm", "parameter_definitions_winter_wheat-moist.csv"],
+                [ "nmin0_90cm",      "parameter_definitions_winter_wheat-nmin.csv"]
+                ]
 
-#sites = ["Ascha","Dornburg","Ettlingen""Guelzow","Werlte"]
-sites = ["Ascha"]
 
-max_omega = 2048
-sample_size = 10000
+output_names = [o[0] for o in output_list]
+
+
+output_id = sa_functions.getOutputId(output_names)
+
+sites = ["Ascha", "Dornburg", "Ettlingen", "Guelzow","Werlte"]
+#sites = ["Ascha"]
+
+max_omega = 4096
+sample_size = 20000
 
 parameters_path = "../configs/2015-03-time-dependent-SA/parameters/winter-wheat/tdsa_parameters"
 
@@ -62,7 +73,7 @@ def mpi_main(crop):
           crop_map = sa_functions.getCropsForSA()
           crop_info = crop_map[crop]
           
-          directory = datetime.datetime.today().strftime("runs/time/2015-09-17/" + str(output) + "/" + site)
+          directory = datetime.datetime.today().strftime("runs/time/2015-09-18/" + str(output) + "/" + site)
           output_path = "runs/"
        
           # HERMES configuration
@@ -118,10 +129,11 @@ def mpi_main(crop):
                   monica.activateDebugOutput(0)
                   result = monica.runMonica(new_env)            
                   values = result.getResultsById(output_id[output_index])
+                  #print output, values
                   local_result_map[str(sample)] = values
 
                   if (sample_index==0):
-                    dev_stage_id = (sa_functions.getOutputId(["devStage"]))[0]
+                    dev_stage_id = (sa_functions.getOutputId(["dev_stage"]))[0]
                     dates.extend(list(result.dates))
                     dev_stages.extend(list(result.getResultsById(dev_stage_id)))
                     
@@ -160,8 +172,7 @@ def mpi_main(crop):
                     first_order= 0.0
                     if ( min(values_for_day) == 0 and max(values_for_day) == 0):
                       pass
-                    else:
-              
+                    else: 
                       
                       omegas = fast_lib.get_ts_frequencies(max_omega, parameter_index, max_param)
         
@@ -201,7 +212,7 @@ def mpi_main(crop):
                     mean_values.append(numpy.mean(values_for_day))
                     tsi_values.append(tsi)
                     si_values.append(first_order)  
-
+                    #print "TSI", tsi, "\tmain effect: ", first_order
                   time_filename = directory + "/" + parameter.getName() + ".csv"
                   time_filehandle = open(time_filename, "wb")
                   time_file = csv.writer(time_filehandle)
