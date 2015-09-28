@@ -65,7 +65,7 @@ add_analyse_after_calculation = 1
 ###########################################################################
 parameter_files_directory = "../configs/2015-03-time-dependent-SA/parameters"
 simulation_files_path = "../configs/2015-03-time-dependent-SA/sites/"
-sites = ["Ascha", "Dornburg", "Ettlingen", "Guelzow", "Werlte"]
+sites = ["Ascha"]# , "Dornburg", "Ettlingen", "Guelzow", "Werlte"]
 crops_to_analyse=[1]
 ###########################################################################
 
@@ -101,7 +101,7 @@ def mpi_main():
       crop_parameter_file = parameter_files_directory + "/" + crop_dir + crop_info.parameter_file
      
       crop_simulation_files_dir = simulation_files_path + site + "/" + crop_info.simulation_files_dir
-      print crop_id, crop_name, crop_parameter_file, crop_simulation_files_dir
+      print (crop_id, crop_name, crop_parameter_file, crop_simulation_files_dir)
 
       # create output director
      
@@ -164,7 +164,7 @@ def mpi_main():
       local_trajectory_list = local_list[0]
       local_parameter_grid = local_list[1]
       local_parameter_list = local_list[2]
-      print rank, "Received", len(local_trajectory_list), "elements" #, local_sv_list
+      print (rank, "Received", len(local_trajectory_list), "elements") #, local_sv_list
       #print rank, "Received", local_parameter_grid
       #print rank, "Received", local_parameter_list
 
@@ -185,7 +185,7 @@ def mpi_main():
           sa_functions.saveEffects(global_effect_list, full_parameter_list,output_path)
            
           dir_file = open("output_dir.r", "w")
-          print >> dir_file, "directory=\""+ output_path+"\""
+          print(dir_file, "directory=\""+ output_path+"\"")
           dir_file.close()
           if (add_analyse_after_calculation==1):         
               os.system("python summary.py")
@@ -196,7 +196,7 @@ def mpi_main():
    
       t_end = datetime.datetime.now()
       time_simulation = t_end - t_start 
-      print "Node: ", rank, "\tSimulationszeit: ", time_simulation
+      print ("Node: ", rank, "\tSimulationszeit: ", time_simulation)
    
 
 ####################################################################
@@ -271,10 +271,10 @@ def runMorrisSA(parameter_list, parameter_grid, local_trajectory_list, env, outp
         # first model evaluation
         if (point_number==0):
           start_vector_index = point
-          print rank, "\t",  point_number, "/", len(traj)#, "\t", point  
+          print (rank, "\t",  point_number, "/", len(traj)) #, "\t", point )
           result_old =getResult(result_map, start_vector_index, env, parameter_list, parameter_grid, crop_id)            
         else:
-          print rank, "\t",  point_number, "/", len(traj)#, "\t", point  
+          print (rank, "\t",  point_number, "/", len(traj)) #, "\t", point  
           # next model evaluation
           result_new = getResult(result_map, point, env, parameter_list, parameter_grid, crop_id)
                          
@@ -301,7 +301,7 @@ def runMorrisSA(parameter_list, parameter_grid, local_trajectory_list, env, outp
     #standardizeEffects(parameter_effects, inputs, outputs)
     t_morris_end = datetime.datetime.now()
     time_morris_step = t_morris_end - t_morris_start
-    print rank, "Morris_Endtime: ", time_morris_step
+    print (rank, "Morris_Endtime: ", time_morris_step)
     #print parameter_effects  
     return parameter_effects
         
@@ -332,85 +332,91 @@ def analyseResults(result_old, result_new, parameter_index, dx, outputs, paramet
     
     #dx = 0.0333
     result_ids = monica.sensitivityAnalysisResultIds()    
-    effect = []
+    effects_per_day = []
     
-    index = 0
-    for id in result_ids:
+    
+    for output_index, output_id in enumerate(result_ids):
         
-      #print monica.resultIdInfo(id).shortName
-      old = sa_functions.getMeanOfList(result_old.getResultsById(id))
-      new = sa_functions.getMeanOfList(result_new.getResultsById(id))
-      if (sa_functions.is_nan(old) or 
-          sa_functions.is_inf(old) or 
-          sa_functions.is_nan(new) or 
-          sa_functions.is_inf(new)):            
-          print "INF or NAN: ", monica.resultIdInfo(id).shortName,"\tOLD: ", old, "\tNEW: ", new, "DX: ", dx, "param: ", parameter_index, parameter_value
-          #quit()
-      else:
-          result = math.fabs(old-new) / dx          
-          effect.append(result)                        
-          #print "\n",rank,"\t", monica.resultIdInfo(id).shortName,parameter_index,"\tValue", parameter_value, "\tOLD: ", old, "\tNEW: ", new, "DX: ", dx,"\tResult",result
+        #print monica.resultIdInfo(id).shortName
+        old = result_old.getResultsById(output_id)
+        new = result_new.getResultsById(output_id)
       
-      
-
-      if (not(sa_functions.is_nan(new)) or  not(sa_functions.is_inf(new))):
-          outputs[index].append(new)
-      
-      index += 1     
+        simulation_day = 0
+        
+        effects = []
+        
+        for (old_value, new_value) in zip (old, new):
+            
+            if (sa_functions.is_nan(old_value) or 
+                sa_functions.is_inf(old_value) or 
+                sa_functions.is_nan(new_value) or 
+                sa_functions.is_inf(new_value)):            
+                print ("INF or NAN at day: ", simulation_day, "\t",  monica.resultIdInfo(output_id).shortName,"\tOLD: ", old_value, "\tNEW: ", new_value, "DX: ", dx, "param: ", parameter_index, parameter_value)
+              #quit()
+            else:
+                result_per_day = math.fabs(old_value-new_value) / dx                          
+                effects.append(result_per_day)                        
+        
+            simulation_day +=1
+            
+            if (not(sa_functions.is_nan(new_value)) or  not(sa_functions.is_inf(new_value))):
+                outputs[output_index].append(new_value)
 	    
-    return effect
+        effects_per_day.append(effects)
+    return effects_per_day
 
 
-    
-        
+################################################    
+################################################
+################################################
 
 
         
     
 def standardizeEffects(parameter_effects, inputs, outputs):
     
-    #print "Inputs:\t",inputs, "\n"
-    #print "Output:\t",outputs, "\n"
+    print ("Inputs:\t",inputs, "\n")
+    print ("Output:\t",outputs, "\n")
     
-    num_outputs = len(monica.sensitivityAnalysisResultIds())
+    # num_outputs = len(monica.sensitivityAnalysisResultIds())
     
-    # calculate standard deviation for the input values
-    std_inputs = []
-    for input in inputs:
-        std_inputs.append(numpy.std(input))
-    #print "STD_Inputs: ", std_inputs
+    # # calculate standard deviation for the input values
+    # std_inputs = []
+    # for input in inputs:
+        # std_inputs.append(numpy.std(input))
+    # #print "STD_Inputs: ", std_inputs
 
-    # calculate standard deviation for the outputs
-    std_outputs = []
-    for output in outputs:
-        std_outputs.append(numpy.std(output))
-    #print "STD_Outputs: ", std_outputs
+    # # calculate standard deviation for the outputs
+    # std_outputs = []
+    # for output in outputs:
+        # std_outputs.append(numpy.std(output))
+    # #print "STD_Outputs: ", std_outputs
     
-    # iterate through effect array that has the structure
-    # effect[inputs][steps][outputs]
-    input_index = 0
-    for input_effect in parameter_effects:
-        step_index = 0
+    # # iterate through effect array that has the structure
+    # # effect[inputs][steps][outputs]
+    # input_index = 0
+    # for input_effect in parameter_effects:
+        # step_index = 0
     
-        for step_effect in input_effect:
+        # for step_effect in input_effect:
     
-            output_index = 0
+            # output_index = 0
             
-            for effect in step_effect:                
-                if (output_index<num_outputs and std_outputs[output_index]!=0.0):
-                    #print "OLD: ", parameter_effects[input_index][step_index][output_index],    
-                    old_effect = parameter_effects[input_index][step_index][output_index] 
-                    new_effect = old_effect*(std_inputs[input_index]/std_outputs[output_index])
-                    parameter_effects[input_index][step_index][output_index] = new_effect                
-                elif(output_index<num_outputs):
-                    #print "output_index<num_outputs"
-                    parameter_effects[input_index][step_index][output_index] = 0.0
-                #print "\tNEW: ", parameter_effects[input_index][step_index][output_index]
-                output_index += 1
+            # for effect in step_effect:                
+                # if (output_index<num_outputs and std_outputs[output_index]!=0.0):
+                    # #print "OLD: ", parameter_effects[input_index][step_index][output_index],    
+                    # old_effect = parameter_effects[input_index][step_index][output_index] 
+                    # new_effect = old_effect*(std_inputs[input_index]/std_outputs[output_index])
+                    # parameter_effects[input_index][step_index][output_index] = new_effect                
+                # elif(output_index<num_outputs):
+                    # #print "output_index<num_outputs"
+                    # parameter_effects[input_index][step_index][output_index] = 0.0
+                # #print "\tNEW: ", parameter_effects[input_index][step_index][output_index]
+                # output_index += 1
     
-            step_index += 1
+            # step_index += 1
             
-        input_index += 1
+        # input_index += 1
         
 ##########################################################
 ##########################################################
