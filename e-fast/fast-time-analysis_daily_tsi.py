@@ -39,10 +39,10 @@ name = MPI.Get_processor_name()
 
 crops = [1]
 
-output_list = [ [ "primaryYield",    "parameter_definitions_winter_wheat-primyield.csv"],
-                [ "dailyAGB",        "parameter_definitions_winter_wheat-agb.csv"],
-                [ "dailyAGB_N",      "parameter_definitions_winter_wheat-nagb.csv"],
-                [ "ETa",             "parameter_definitions_winter_wheat-eta.csv"],
+output_list = [ #[ "primaryYield",    "parameter_definitions_winter_wheat-primyield.csv"],
+                #[ "dailyAGB",        "parameter_definitions_winter_wheat-agb.csv"],
+                #[ "dailyAGB_N",      "parameter_definitions_winter_wheat-nagb.csv"],
+                #[ "ETa",             "parameter_definitions_winter_wheat-eta.csv"],
                 [ "soilMoist0_90cm", "parameter_definitions_winter_wheat-moist.csv"],
                 [ "nmin0_90cm",      "parameter_definitions_winter_wheat-nmin.csv"]
                 ]
@@ -50,6 +50,7 @@ output_list = [ [ "primaryYield",    "parameter_definitions_winter_wheat-primyie
 
 output_names = [o[0] for o in output_list]
 output_id = sa_functions.getOutputId(output_names)
+print "Output_id:", output_id
 
 max_omega = 4096    
 sample_size = 20000
@@ -131,7 +132,8 @@ def mpi_main(crop):
                     #print rank, sample_index, "/", len(sample_list), "\t",sample
                     new_env = applySAValues(complete_list, sample, env, crop)        
                     monica.activateDebugOutput(0)
-                    result = monica.runMonica(new_env)            
+                    result = monica.runMonica(new_env)
+                    #print output_index, output_id            
                     values = result.getResultsById(output_id[output_index])
                     local_result_map[str(sample)] = values
 
@@ -167,18 +169,18 @@ def mpi_main(crop):
                     tsi_values = ["TSi"]
                     si_values = ["Si"]
                     std_values = ["STD"]
-                    mean_si_values = ["Mean-Si"]
-                    mean_tsi_values = ["Mean-TSi"]
+                    #mean_si_values = ["Mean-Si"]
+                    #mean_tsi_values = ["Mean-TSi"]
 
                     for day in range(0,days,1):
                         values_for_day = []
                         for sample in range(0,sample_count):
-                        values_for_day.append(result_array[sample][day])
+                            values_for_day.append(result_array[sample][day])
 
-                        print
-                        print "Tag:", day
-                        print len(values_for_day)
-                        print len(mean_values_for_day)
+                        #print
+                        #print "Tag:", day
+                        #print len(values_for_day)
+                        #print len(mean_values_for_day)
     
                         tsi = 0.0
                         first_order= 0.0
@@ -199,8 +201,8 @@ def mpi_main(crop):
                         std_values.append(numpy.std(values_for_day))
                         tsi_values.append(tsi)
                         si_values.append(first_order)  
-                        mean_tsi_values.append(tsi_mean)
-                        mean_si_values.append(si_mean)
+                        #mean_tsi_values.append(tsi_mean)
+                        #mean_si_values.append(si_mean)
 
                     time_filename = directory + "/" + parameter.getName() + ".csv"
                     time_filehandle = open(time_filename, "w")
@@ -213,8 +215,8 @@ def mpi_main(crop):
                     time_file.writerow(std_values)
                     time_file.writerow(tsi_values)
                     time_file.writerow(si_values)
-                    time_file.writerow(mean_tsi_values)
-                    time_file.writerow(mean_si_values)            
+                    #time_file.writerow(mean_tsi_values)
+                    #time_file.writerow(mean_si_values)            
                     time_filehandle.close()
                 
 ##############################################################    

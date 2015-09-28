@@ -426,10 +426,10 @@ const vector<int>& Monica::sensitivityAnalysisResultIds()
     soilMoist0_90cm,
     //corg0_30cm,
     nmin0_90cm,
-    //dev_stage
+    dev_stage
   };
 
-  static vector<int> v(ids, ids+6);
+  static vector<int> v(ids, ids+7);
   //static vector<int> v(ids, ids+1);
 
   return v;

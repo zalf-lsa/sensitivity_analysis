@@ -318,8 +318,8 @@ def getOutputId(output_list):
     name_map["primaryYield"] = "primaryYield"
     name_map["dailyAGB_N"] = "dailyAGB_N"
     name_map["ETa"] = "ETa"
-    name_map["soilMoist0_90cm"] = "soilMoist0_90cm"
-    name_map["nmin0_90cm"] = "nmin0_90cm"
+    name_map["soilMoist0_90cm"] = "soilMoist0_90"
+    name_map["nmin0_90cm"] = "nmin0_90"
     name_map["aboveGroundBiomass"] = "aboveGroundBiomass"
 
 
