@@ -41,10 +41,10 @@ name = MPI.Get_processor_name()
 #############################################################################
 # Configuration
 #############################################################################
-ranges = 20
-start_vector_count = 40
-random_start_vector_count = 500
-schrittweite = 5
+ranges = 5# 20
+start_vector_count = 2# 40
+random_start_vector_count = 10# 500
+schrittweite = 1 #5
 
 dx_fix = float(schrittweite) /  (float(ranges)-1)
 
