@@ -101,7 +101,7 @@ def mpi_main():
       crop_parameter_file = parameter_files_directory + "/" + crop_dir + crop_info.parameter_file
      
       crop_simulation_files_dir = simulation_files_path + site + "/" + crop_info.simulation_files_dir
-      print (crop_id, crop_name, crop_parameter_file, crop_simulation_files_dir)
+      print crop_id, crop_name, crop_parameter_file, crop_simulation_files_dir
 
       # create output director
      
@@ -164,7 +164,7 @@ def mpi_main():
       local_trajectory_list = local_list[0]
       local_parameter_grid = local_list[1]
       local_parameter_list = local_list[2]
-      print (rank, "Received", len(local_trajectory_list), "elements") #, local_sv_list
+      print rank, "Received", len(local_trajectory_list), "elements" #, local_sv_list
       #print rank, "Received", local_parameter_grid
       #print rank, "Received", local_parameter_list
 
@@ -181,22 +181,43 @@ def mpi_main():
        
 	
       if (rank == 0):
-          #print "SAVE: ", global_effect_list, "\n",full_parameter_list,"\n",output_path
-          sa_functions.saveEffects(global_effect_list, full_parameter_list,output_path)
+        #print "SAVE: ", global_effect_list, "\n",full_parameter_list,"\n",output_path
+        print ("save parameter_effects", output_path)
+        #print parameter_effects
+        # output_names = getOutputNames()
+        # parameter_names = []
+        # file_list = []
+        # for p in parameter_list:
+            # file = csv.writer(open(output_path+"/outputs/"+p.getName() +".txt", "w"), delimiter='\t')
+            # file.writerow(output_names)                  
+            # file_list.append(file)
+            # parameter_names.append(p.getName())
+    
+    
+        # for proc_list in parameter_effects:
+            # index =0    
+            # for parameter_effects in proc_list:
+                # file = file_list[index]            
+            
+                # for effects in parameter_effects:
+                    write effect values of all outputs to file
+                    print parameter_names[index], effects
+                    # file.writerow(effects)                
+                # index = index+1    
            
-          dir_file = open("output_dir.r", "w")
-          print(dir_file, "directory=\""+ output_path+"\"")
-          dir_file.close()
-          if (add_analyse_after_calculation==1):         
-              os.system("python summary.py")
-              os.system("python generate_parameter_ranking.py")
-              #os.system("R --slave --vanilla < generateMeanStdPlots.r")
-              #os.system("R --slave --vanilla < input_distr.r")
-              dir_file.close()
+            # dir_file = open("output_dir.r", "w")
+            # print >> dir_file, "directory=\""+ output_path+"\""
+            # dir_file.close()
+            # if (add_analyse_after_calculation==1):         
+                # os.system("python summary.py")
+                # os.system("python generate_parameter_ranking.py")
+                os.system("R --slave --vanilla < generateMeanStdPlots.r")
+                os.system("R --slave --vanilla < input_distr.r")
+                # dir_file.close()
    
-      t_end = datetime.datetime.now()
-      time_simulation = t_end - t_start 
-      print ("Node: ", rank, "\tSimulationszeit: ", time_simulation)
+        t_end = datetime.datetime.now()
+        time_simulation = t_end - t_start 
+        print "Node: ", rank, "\tSimulationszeit: ", time_simulation
    
 
 ####################################################################
@@ -271,10 +292,10 @@ def runMorrisSA(parameter_list, parameter_grid, local_trajectory_list, env, outp
         # first model evaluation
         if (point_number==0):
           start_vector_index = point
-          print (rank, "\t",  point_number, "/", len(traj)) #, "\t", point )
+          print rank, "\t",  point_number, "/", len(traj)) #, "\t", point 
           result_old =getResult(result_map, start_vector_index, env, parameter_list, parameter_grid, crop_id)            
         else:
-          print (rank, "\t",  point_number, "/", len(traj)) #, "\t", point  
+          print rank, "\t",  point_number, "/", len(traj) #, "\t", point  
           # next model evaluation
           result_new = getResult(result_map, point, env, parameter_list, parameter_grid, crop_id)
                          
@@ -301,7 +322,7 @@ def runMorrisSA(parameter_list, parameter_grid, local_trajectory_list, env, outp
     #standardizeEffects(parameter_effects, inputs, outputs)
     t_morris_end = datetime.datetime.now()
     time_morris_step = t_morris_end - t_morris_start
-    print (rank, "Morris_Endtime: ", time_morris_step)
+    print rank, "Morris_Endtime: ", time_morris_step
     #print parameter_effects  
     return parameter_effects
         
@@ -363,6 +384,7 @@ def analyseResults(result_old, result_new, parameter_index, dx, outputs, paramet
                 outputs[output_index].append(new_value)
 	    
         effects_per_day.append(effects)
+    print effects_per_day
     return effects_per_day
 
 
