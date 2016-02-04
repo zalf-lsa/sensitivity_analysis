@@ -1,0 +1,7 @@
+No;Parametername;min;max;nominal;table;0.3
+$54_1$;pc_SpecificLeafArea1;0.0014;0.0026;0.002;dev_stage;
+$45_5$;pc_StageTemperatureSum5;294;546;420;dev_stage;
+$46_5$;pc_BaseTemperature5;6.3;11.7;9;dev_stage;
+$52_3$;pc_StageKcFactor3;0.77;1.43;1.1;dev_stage;
+$52_4$;pc_StageKcFactor4;0.77;1.43;1.1;dev_stage;
+67;pc_ReferenceAlbedo;0.161;0.299;0.23;user_parameter;

@@ -1,0 +1,8 @@
+No;Parametername;min;max;nominal;table;0.3
+1;pc_MaxAssimilationRate;36.4;67.6;52;crop;
+$44_1-2$;pc_AssimilatePartitioningDevStage1Organ2;0.35;0.65;0.5;crop2ods_dependent_param;
+$54_1$;pc_SpecificLeafArea1;0.0014;0.0026;0.002;dev_stage;
+$56_3$;pc_OrganMaintenanceRespiration3;0.105;0.195;0.15;organ;
+$62_1$;pc_MaintenanceRespirationParameter1;0.07;0.09;0.08;user_parameter;
+$48_2$;pc_VernalisationRequirement2;35;65;50;dev_stage;
+39;pc_LT50cultivar;-16.8;-31.2;-24;crop;

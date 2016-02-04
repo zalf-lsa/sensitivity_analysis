@@ -1,0 +1,6 @@
+BdID Corg Bart UKT LD Stn C/N C/S Hy Wmx AzHo 
+001 1.3 Ut4 03 2 00 00 --- 00 08 4
+001 0.7 Ut4 05 2 00 00 --- 00 08
+001 0.3 Uls 12 1 00 00 --- 00 08
+001 0.01 Uls 20 3 00 00 --- 00 08
+end
