@@ -1,0 +1,6 @@
+field_ID  crp sowing harves tillag Exp dp Yld year comment
+1 WW  041005 290706 031005 000 30 000 2006
+1 WW  041006 290707 031006 000 30 000 2007
+1 WW  041007 290708 031007 000 30 000 2008
+end
+
