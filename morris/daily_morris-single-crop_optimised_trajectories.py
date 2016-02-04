@@ -23,6 +23,8 @@ import os
 import csv
 import monica
 
+from scipy.stats import rankdata
+
 from monica_simulation import initializeMonicaSimulation
 from saparameter import SAParameter
 from apply_sa_values import applySAValues 
@@ -41,10 +43,10 @@ name = MPI.Get_processor_name()
 #############################################################################
 # Configuration
 #############################################################################
-ranges = 5# 20
-start_vector_count = 2# 40
-random_start_vector_count = 10# 500
-schrittweite = 1 #5
+ranges =  20
+start_vector_count = 40
+random_start_vector_count = 500
+schrittweite = 5
 
 dx_fix = float(schrittweite) /  (float(ranges)-1)
 
@@ -63,9 +65,9 @@ add_analyse_after_calculation = 1
 ###########################################################################
 # configuration for time-dependent SA paper
 ###########################################################################
-parameter_files_directory = "../configs/2015-03-time-dependent-SA/parameters"
-simulation_files_path = "../configs/2015-03-time-dependent-SA/sites/"
-sites = ["Ascha"]# , "Dornburg", "Ettlingen", "Guelzow", "Werlte"]
+parameter_files_directory = "../configs/2016-01-time-dependent-SA/parameters"
+simulation_files_path = "../configs/2016-01-time-dependent-SA/sites/"
+sites = ["Ascha" , "Dornburg", "Ettlingen", "Guelzow", "Werlte"]
 crops_to_analyse=[1]
 ###########################################################################
 
@@ -83,8 +85,8 @@ Main routine for parallel MPI execution
 """
 def mpi_main():
 
-  basis_output_dir = datetime.datetime.today().strftime("%Y-%m-%d_%H-%M-%S")
-
+  #basis_output_dir = datetime.datetime.today().strftime("%Y-%m-%d_%H-%M-%S")
+  basis_output_dir = "2016-02-04"
   crop_map = getCropsForSA()
 
   for site in sites:
@@ -129,23 +131,11 @@ def mpi_main():
 
 
       if (rank==0):
-
           if (not os.path.exists(output_path)):        
               os.makedirs(output_path)        
-          if (not os.path.exists(output_path+"/outputs/")):  
-              os.makedirs(output_path+"/outputs/")
-          if (not os.path.exists(output_path+"/distr/")):  
-              os.makedirs(output_path+"/distr/")        
 
       trajectories = sa_functions.get_optimised_trajectories(full_parameter_list, parameter_grid, start_vector_count, ranges, schrittweite, random_start_vector_count)
           
-          # get names of parameters
-          #names = [str(p.getName()) for p in full_parameter_list]
-          #sample_file = csv.writer(open(output_path+"/sample_file.txt", "wb"), delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-          #sample_file.writerow(names)
-
-          # generate list for scattering to nodes        
-
       if (rank == 0):    
         trajectory_list = mpi_helper.splitListForNodes(trajectories, size)
 
@@ -171,7 +161,6 @@ def mpi_main():
       effect_list = []
       if (len(local_trajectory_list) > 0):
         effect_list = runMorrisSA(local_parameter_list, local_parameter_grid, local_trajectory_list, env, output_path, crop_id)
-        #print rank, "EFFECT_LIST local: ", effect_list
       	
       global_effect_list = comm.gather(effect_list, root=0)
 	
@@ -181,51 +170,87 @@ def mpi_main():
        
 	
       if (rank == 0):
-        #print "SAVE: ", global_effect_list, "\n",full_parameter_list,"\n",output_path
-        print ("save parameter_effects", output_path)
-        #print parameter_effects
-        # output_names = getOutputNames()
-        # parameter_names = []
-        # file_list = []
-        # for p in parameter_list:
-            # file = csv.writer(open(output_path+"/outputs/"+p.getName() +".txt", "w"), delimiter='\t')
-            # file.writerow(output_names)                  
-            # file_list.append(file)
-            # parameter_names.append(p.getName())
-    
-    
-        # for proc_list in parameter_effects:
-            # index =0    
-            # for parameter_effects in proc_list:
-                # file = file_list[index]            
-            
-                # for effects in parameter_effects:
-                    write effect values of all outputs to file
-                    print parameter_names[index], effects
-                    # file.writerow(effects)                
-                # index = index+1    
-           
-            # dir_file = open("output_dir.r", "w")
-            # print >> dir_file, "directory=\""+ output_path+"\""
-            # dir_file.close()
-            # if (add_analyse_after_calculation==1):         
-                # os.system("python summary.py")
-                # os.system("python generate_parameter_ranking.py")
-                os.system("R --slave --vanilla < generateMeanStdPlots.r")
-                os.system("R --slave --vanilla < input_distr.r")
-                # dir_file.close()
+
+          print ("Analyse daily parameter effects")
+          output_names = sa_functions.getOutputNames()
+
+
+          for output_index, output in enumerate(output_names):
+
+              print "Analyse results for output:", output
+
+              # create separate directory for each output
+              output_directory = output_path + "/" + output
+              if (not os.path.exists(output_directory)):
+                  os.makedirs(output_directory)
+
+              output_mu_array = []
+              for parameter_index, parameter in enumerate(full_parameter_list):
+
+                   print "Analyse parameter:", parameter.getName(), parameter_index              
+
+                   file_handle = open(output_directory + "/" + parameter.getName() + ".csv", "w")
+                   parameter_csv = csv.writer(file_handle, delimiter=";")
+                   
+                   daily_parameter_effects = []
+                   for sample_index, sample_list in enumerate(global_effect_list):
+              
+		       daily_effect_list = sample_list[parameter_index][0][output_index]
+                       parameter_csv.writerow(daily_effect_list)
+                       daily_parameter_effects.append(daily_effect_list)
+
+                   # calculate mu for each day
+                   effect_array = numpy.array(daily_parameter_effects)
+                   daily_mu_values = numpy.mean(effect_array, axis=0)
+                   output_mu_array.append(daily_mu_values)
+
+                   # close file of daily effect values
+                   file_handle.close()
+
+              # write scaled mu values to file
+              mu_array = numpy.array(output_mu_array)
+
+              # scale effects for one output   
+              max_of_array = numpy.max(mu_array, axis=0)
+              max_of_array[max_of_array == 0] = 1                                    
+              mu_array /= max_of_array
+              
+              rank_array = numpy.zeros(mu_array.shape)
+              # calculate rank for each parameter at each simulation day
+              for day_index, day in enumerate(max_of_array): 
+                  rank_array[:, day_index] =  (len(mu_array[:, day_index])+1) - rankdata(mu_array[:,day_index], method='min')
+
+              # save ranks to a csv file
+              output_filehandle = open(output_path + "/" + output + "-mus.csv", "w")
+              rank_filehandle = open(output_path + "/" + output + "-rank.csv", "w")
+              output_csv = csv.writer(output_filehandle, delimiter=";")
+              rank_csv = csv.writer(rank_filehandle, delimiter=";")
+
+              for parameter_index, parameter in enumerate(full_parameter_list):
+                   row = () 
+                   rank_row = () 
+
+                   row += (parameter.getName(), )
+                   rank_row += (parameter.getName(), )
+
+                   row += tuple(mu_array[parameter_index])
+                   rank_row += tuple(rank_array[parameter_index])
+
+                   output_csv.writerow(row)
+                   rank_csv.writerow(rank_row)
+
+              # close output csv file
+              output_filehandle.close()
+              rank_filehandle.close()             
+
+          t_end = datetime.datetime.now()
+          time_simulation = t_end - t_start 
+          print "Node: ", rank, "\tSimulationszeit: ", time_simulation
    
-        t_end = datetime.datetime.now()
-        time_simulation = t_end - t_start 
-        print "Node: ", rank, "\tSimulationszeit: ", time_simulation
-   
 
-####################################################################
-        
-
-
-
-
+##########################################################    
+##########################################################    
+##########################################################    
 
 
 """
@@ -256,6 +281,9 @@ def generateParameterGrid(parameter_list,range_number):
     return parameter_grid
 
 
+##########################################################    
+##########################################################    
+##########################################################    
 
 """  
 Method that performs a sensitivity analysis according to morris
@@ -292,7 +320,7 @@ def runMorrisSA(parameter_list, parameter_grid, local_trajectory_list, env, outp
         # first model evaluation
         if (point_number==0):
           start_vector_index = point
-          print rank, "\t",  point_number, "/", len(traj)) #, "\t", point 
+          print rank, "\t",  point_number, "/", len(traj) #, "\t", point 
           result_old =getResult(result_map, start_vector_index, env, parameter_list, parameter_grid, crop_id)            
         else:
           print rank, "\t",  point_number, "/", len(traj) #, "\t", point  
@@ -305,7 +333,8 @@ def runMorrisSA(parameter_list, parameter_grid, local_trajectory_list, env, outp
               parameter_index += 1
             else:
               break
-
+          
+          #dx_new = (parameter_list[parameter_index].getMax() - parameter_list[parameter_index].getMin())/dx_fix
           #dx = math.fabs(parameter_grid[parameter_index][0] - parameter_grid[parameter_index][1])
           dx = dx_fix
           parameter_value = parameter_grid[parameter_index][point[parameter_index]]
@@ -318,15 +347,15 @@ def runMorrisSA(parameter_list, parameter_grid, local_trajectory_list, env, outp
           result_old = result_new    
         point_old = point
      
-    #print "before", parameter_effects
-    #standardizeEffects(parameter_effects, inputs, outputs)
     t_morris_end = datetime.datetime.now()
     time_morris_step = t_morris_end - t_morris_start
     print rank, "Morris_Endtime: ", time_morris_step
-    #print parameter_effects  
+    
     return parameter_effects
         
-    
+##########################################################    
+##########################################################    
+##########################################################    
     
 def getResult(result_map, start_vector_index, env, parameter_list, parameter_grid, crop_id):
     #print start_vector_index
@@ -343,6 +372,9 @@ def getResult(result_map, start_vector_index, env, parameter_list, parameter_gri
     return result   
         
     
+##########################################################    
+##########################################################    
+##########################################################    
 
 
 """ 
@@ -355,7 +387,7 @@ def analyseResults(result_old, result_new, parameter_index, dx, outputs, paramet
     result_ids = monica.sensitivityAnalysisResultIds()    
     effects_per_day = []
     
-    
+    output_names = sa_functions.getOutputNames()
     for output_index, output_id in enumerate(result_ids):
         
         #print monica.resultIdInfo(id).shortName
@@ -365,7 +397,7 @@ def analyseResults(result_old, result_new, parameter_index, dx, outputs, paramet
         simulation_day = 0
         
         effects = []
-        
+        daily_outputs = []
         for (old_value, new_value) in zip (old, new):
             
             if (sa_functions.is_nan(old_value) or 
@@ -378,67 +410,19 @@ def analyseResults(result_old, result_new, parameter_index, dx, outputs, paramet
                 result_per_day = math.fabs(old_value-new_value) / dx                          
                 effects.append(result_per_day)                        
         
+            if (not(sa_functions.is_nan(new_value)) or not(sa_functions.is_inf(new_value))):
+                daily_outputs.append(new_value)
+
             simulation_day +=1
             
-            if (not(sa_functions.is_nan(new_value)) or  not(sa_functions.is_inf(new_value))):
-                outputs[output_index].append(new_value)
+        outputs[output_index].append(daily_outputs)
 	    
         effects_per_day.append(effects)
-    print effects_per_day
     return effects_per_day
 
 
-################################################    
-################################################
-################################################
-
-
-        
     
-def standardizeEffects(parameter_effects, inputs, outputs):
-    
-    print ("Inputs:\t",inputs, "\n")
-    print ("Output:\t",outputs, "\n")
-    
-    # num_outputs = len(monica.sensitivityAnalysisResultIds())
-    
-    # # calculate standard deviation for the input values
-    # std_inputs = []
-    # for input in inputs:
-        # std_inputs.append(numpy.std(input))
-    # #print "STD_Inputs: ", std_inputs
-
-    # # calculate standard deviation for the outputs
-    # std_outputs = []
-    # for output in outputs:
-        # std_outputs.append(numpy.std(output))
-    # #print "STD_Outputs: ", std_outputs
-    
-    # # iterate through effect array that has the structure
-    # # effect[inputs][steps][outputs]
-    # input_index = 0
-    # for input_effect in parameter_effects:
-        # step_index = 0
-    
-        # for step_effect in input_effect:
-    
-            # output_index = 0
             
-            # for effect in step_effect:                
-                # if (output_index<num_outputs and std_outputs[output_index]!=0.0):
-                    # #print "OLD: ", parameter_effects[input_index][step_index][output_index],    
-                    # old_effect = parameter_effects[input_index][step_index][output_index] 
-                    # new_effect = old_effect*(std_inputs[input_index]/std_outputs[output_index])
-                    # parameter_effects[input_index][step_index][output_index] = new_effect                
-                # elif(output_index<num_outputs):
-                    # #print "output_index<num_outputs"
-                    # parameter_effects[input_index][step_index][output_index] = 0.0
-                # #print "\tNEW: ", parameter_effects[input_index][step_index][output_index]
-                # output_index += 1
-    
-            # step_index += 1
-            
-        # input_index += 1
         
 ##########################################################
 ##########################################################
@@ -453,6 +437,10 @@ class CropInfo:
     self.simulation_files_dir = simulation_files_dir
 
         
+#####################################################
+#####################################################
+#####################################################
+
 def getCropsForSA():
 
   crop_map = {}
@@ -473,8 +461,10 @@ def getCropsForSA():
   return crop_map
 
 
-
 #####################################################
+#####################################################
+#####################################################
+
 """ 
 Hauptprogramm
 """
