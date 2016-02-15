@@ -61,6 +61,7 @@ def main():
             new_std = []
             for x in data_row:
                 if(x!='' and x!='nan ' and x!='nan'):
+                    print x, type(x)
                     new_mean.append(math.fabs(float(x)))
                     new_std.append(float(x))
 

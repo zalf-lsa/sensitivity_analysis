@@ -39,10 +39,10 @@ name = MPI.Get_processor_name()
 
 crops = [1]
 
-output_list = [ #[ "primaryYield",    "parameter_definitions_winter_wheat-primyield.csv"],
-                #[ "dailyAGB",        "parameter_definitions_winter_wheat-agb.csv"],
-                #[ "dailyAGB_N",      "parameter_definitions_winter_wheat-nagb.csv"],
-                #[ "ETa",             "parameter_definitions_winter_wheat-eta.csv"],
+output_list = [ [ "dailyPrimYield",    "parameter_definitions_winter_wheat-primyield.csv"],
+                [ "dailyAGB",        "parameter_definitions_winter_wheat-agb.csv"],
+                [ "dailyAGB_N",      "parameter_definitions_winter_wheat-nagb.csv"],
+                [ "ETa",             "parameter_definitions_winter_wheat-eta.csv"],
                 [ "soilMoist0_90cm", "parameter_definitions_winter_wheat-moist.csv"],
                 [ "nmin0_90cm",      "parameter_definitions_winter_wheat-nmin.csv"]
                 ]
@@ -52,12 +52,12 @@ output_names = [o[0] for o in output_list]
 output_id = sa_functions.getOutputId(output_names)
 print "Output_id:", output_id
 
-max_omega = 4096    
-sample_size = 20000
+max_omega = 8192    
+sample_size = 50000
 
 sites = ["Ascha", "Dornburg", "Ettlingen", "Guelzow","Werlte"]
 
-parameters_path = "../configs/2015-03-time-dependent-SA/parameters/winter-wheat/tdsa_parameters"
+parameters_path = "../configs/2016-01-time-dependent-SA/parameters/winter-wheat/tdsa_parameters"
 
 
 ##############################################################    
@@ -81,7 +81,7 @@ def mpi_main(crop):
             crop_map = sa_functions.getCropsForSA()
             crop_info = crop_map[crop]
           
-            directory = datetime.datetime.today().strftime("runs/time/2015-09-21/" + str(output) + "/" + site)
+            directory = datetime.datetime.today().strftime("runs/time/2016-02-08/" + str(output) + "/" + site)
             output_path = "runs/"
        
             # HERMES configuration
@@ -262,7 +262,7 @@ def get_TSi_Si(max_omega, parameter_index, max_param, values):
 
 def getHermesSimulationPath(crop_id, site):  
 
-    path = "../configs/2015-03-time-dependent-SA/sites/" + site + "/"
+    path = "../configs/2016-01-time-dependent-SA/sites/" + site + "/"
 
     crop_map = sa_functions.getCropsForSA()
     crop_info = crop_map[crop_id]

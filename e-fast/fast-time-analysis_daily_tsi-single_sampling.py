@@ -35,12 +35,12 @@ name = MPI.Get_processor_name()
 crops = [1]
 
 
-output_list = [ [ "primaryYield",    "parameter_definitions_winter_wheat-primyield.csv"],
-                [ "dailyAGB",        "parameter_definitions_winter_wheat-agb.csv"],
-                [ "dailyAGB_N",      "parameter_definitions_winter_wheat-nagb.csv"],
-                [ "ETa",             "parameter_definitions_winter_wheat-eta.csv"],
-                [ "soilMoist0_90cm", "parameter_definitions_winter_wheat-moist.csv"],
-                [ "nmin0_90cm",      "parameter_definitions_winter_wheat-nmin.csv"]
+output_list = [ #[ "dailyPrimYield",    "parameter_definitions_winter_wheat-primyield.csv"],
+                #[ "dailyAGB",        "parameter_definitions_winter_wheat-agb.csv"],
+                #[ "dailyAGB_N",      "parameter_definitions_winter_wheat-nagb.csv"],
+                [ "ETa",             "parameter_definitions_winter_wheat-eta.csv"]
+               # [ "soilMoist0_90cm", "parameter_definitions_winter_wheat-moist.csv"]
+               # [ "nmin0_90cm",      "parameter_definitions_winter_wheat-nmin.csv"]
                 ]
 
 
@@ -49,13 +49,13 @@ output_names = [o[0] for o in output_list]
 
 output_id = sa_functions.getOutputId(output_names)
 
-sites = ["Ascha", "Dornburg", "Ettlingen", "Guelzow","Werlte"]
-#sites = ["Ascha"]
+#sites = ["Ascha", "Dornburg", "Ettlingen", "Guelzow","Werlte"]
+sites = ["Ascha", "Dornburg"]
 
 max_omega = 4096
-sample_size = 20000
+sample_size =32769 
 
-parameters_path = "../configs/2015-03-time-dependent-SA/parameters/winter-wheat/tdsa_parameters"
+parameters_path = "../configs/2016-01-time-dependent-SA/parameters/winter-wheat/tdsa_parameters"
 
 """ 
 ####################################################################
@@ -73,7 +73,7 @@ def mpi_main(crop):
           crop_map = sa_functions.getCropsForSA()
           crop_info = crop_map[crop]
           
-          directory = datetime.datetime.today().strftime("runs/time/2015-09-18/" + str(output) + "/" + site)
+          directory = datetime.datetime.today().strftime("runs/time/2016-02-08-a/" + str(output) + "/" + site)
           output_path = "runs/"
        
           # HERMES configuration
@@ -175,9 +175,9 @@ def mpi_main(crop):
                     else: 
                       
                       omegas = fast_lib.get_ts_frequencies(max_omega, parameter_index, max_param)
-        
+                              
                       max_omega_o = int(max_omega/8)
-
+                      
                       fft = numpy.fft.fft(values_for_day)
                       real=numpy.real(fft)
                       imag= numpy.imag(fft)
@@ -230,7 +230,7 @@ def mpi_main(crop):
 def getHermesSimulationPath(crop_id, site):
   
 
-    path = "../configs/2015-03-time-dependent-SA/sites/" + site + "/"
+    path = "../configs/2016-01-time-dependent-SA/sites/" + site + "/"
 
     crop_map = sa_functions.getCropsForSA()
     crop_info = crop_map[crop_id]

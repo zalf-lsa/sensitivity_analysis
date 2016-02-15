@@ -131,7 +131,7 @@ def get_ts_frequencies(omega_i, index, max_param):
     
     omegas = []
     omega_o = 1
-    step = 8
+    step = 16
 
     for i in range(max_param):
         
@@ -145,5 +145,5 @@ def get_ts_frequencies(omega_i, index, max_param):
             # frequency of other parameters
             omegas.append(omega_o)
             omega_o+=step
-    print "Omegas: ", omegas
+    print "Omegas: ", omegas, "max_param", max_param
     return omegas

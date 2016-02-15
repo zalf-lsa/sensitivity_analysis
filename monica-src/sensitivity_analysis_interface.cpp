@@ -412,14 +412,17 @@ const vector<int>& Monica::sensitivityAnalysisResultIds()
 {
   static ResultId ids[] =
   {
-    primaryYield,                   // done
+    //primaryYield,                   // done
     //biomassNContent,
-    //aboveGroundBiomass
+    //aboveGroundBiomass,
     //aboveBiomassNContent,
     //sumETaPerCrop,                  // done
     //soilMoist0_90cmAtHarvest,
     //corg0_30cmAtHarvest,
     //nmin0_90cmAtHarvest
+
+
+    dailyPrimYield,
     dailyAGB,
     dailyAGB_N,
     ETa,

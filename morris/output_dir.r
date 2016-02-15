@@ -1,1 +1,1 @@
-directory="runs/2015-03-20_08-38-18/Ascha//crop-Winter wheat-min-step6_range20_startvector20"
+directory="runs/2016-02-04_15-04-57/Werlte//crop-Winter wheat-min-step5_range20_startvector40"

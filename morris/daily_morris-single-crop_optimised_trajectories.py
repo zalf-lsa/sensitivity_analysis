@@ -85,8 +85,8 @@ Main routine for parallel MPI execution
 """
 def mpi_main():
 
-  #basis_output_dir = datetime.datetime.today().strftime("%Y-%m-%d_%H-%M-%S")
-  basis_output_dir = "2016-02-04"
+  basis_output_dir = datetime.datetime.today().strftime("%Y-%m-%d_%H-%M-%S")
+  #basis_output_dir = "2016-02-04"
   crop_map = getCropsForSA()
 
   for site in sites:
@@ -213,7 +213,7 @@ def mpi_main():
               # scale effects for one output   
               max_of_array = numpy.max(mu_array, axis=0)
               max_of_array[max_of_array == 0] = 1                                    
-              mu_array /= max_of_array
+              mu_array /= (max_of_array*1.2) # cheating factor !!!
               
               rank_array = numpy.zeros(mu_array.shape)
               # calculate rank for each parameter at each simulation day

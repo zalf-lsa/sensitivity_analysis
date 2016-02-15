@@ -174,17 +174,17 @@ def mpi_main():
         #print "SAVE: ", global_effect_list, "\n",full_parameter_list,"\n",output_path
         print ("save parameter_effects", output_path)
         #print parameter_effects
-        output_names = getOutputNames()
+        output_names = sa_functions.getOutputNames()
         parameter_names = []
         file_list = []
-        for p in parameter_list:
+        for p in full_parameter_list:
             file = csv.writer(open(output_path+"/outputs/"+p.getName() +".txt", "w"), delimiter='\t')
             file.writerow(output_names)                  
             file_list.append(file)
             parameter_names.append(p.getName())
     
     
-        for proc_list in parameter_effects:
+        for proc_list in global_effect_list:
             index =0    
             for parameter_effects in proc_list:
                 file = file_list[index]            
@@ -203,7 +203,7 @@ def mpi_main():
                 os.system("python generate_parameter_ranking.py")
                 #os.system("R --slave --vanilla < generateMeanStdPlots.r")
                 #os.system("R --slave --vanilla < input_distr.r")
-                dir_file.close()
+ #               dir_file.close()
    
         t_end = datetime.datetime.now()
         time_simulation = t_end - t_start 
@@ -282,7 +282,7 @@ def runMorrisSA(parameter_list, parameter_grid, local_trajectory_list, env, outp
         # first model evaluation
         if (point_number==0):
           start_vector_index = point
-          print rank, "\t",  point_number, "/", len(traj)) #, "\t", point 
+          print rank, "\t",  point_number, "/", len(traj) #, "\t", point 
           result_old =getResult(result_map, start_vector_index, env, parameter_list, parameter_grid, crop_id)            
         else:
           print rank, "\t",  point_number, "/", len(traj) #, "\t", point  
@@ -373,8 +373,9 @@ def analyseResults(result_old, result_new, parameter_index, dx, outputs, paramet
             if (not(sa_functions.is_nan(new_value)) or  not(sa_functions.is_inf(new_value))):
                 outputs[output_index].append(new_value)
 	    
-        effects_per_day.append(effects)
-    print effects_per_day
+	#print "SIMDAY: ", simulation_day
+        effects_per_day.append(numpy.mean(effects))
+    #print effects_per_day
     return effects_per_day
 
 
@@ -385,55 +386,6 @@ def analyseResults(result_old, result_new, parameter_index, dx, outputs, paramet
 
         
     
-def standardizeEffects(parameter_effects, inputs, outputs):
-    
-    print ("Inputs:\t",inputs, "\n")
-    print ("Output:\t",outputs, "\n")
-    
-    # num_outputs = len(monica.sensitivityAnalysisResultIds())
-    
-    # # calculate standard deviation for the input values
-    # std_inputs = []
-    # for input in inputs:
-        # std_inputs.append(numpy.std(input))
-    # #print "STD_Inputs: ", std_inputs
-
-    # # calculate standard deviation for the outputs
-    # std_outputs = []
-    # for output in outputs:
-        # std_outputs.append(numpy.std(output))
-    # #print "STD_Outputs: ", std_outputs
-    
-    # # iterate through effect array that has the structure
-    # # effect[inputs][steps][outputs]
-    # input_index = 0
-    # for input_effect in parameter_effects:
-        # step_index = 0
-    
-        # for step_effect in input_effect:
-    
-            # output_index = 0
-            
-            # for effect in step_effect:                
-                # if (output_index<num_outputs and std_outputs[output_index]!=0.0):
-                    # #print "OLD: ", parameter_effects[input_index][step_index][output_index],    
-                    # old_effect = parameter_effects[input_index][step_index][output_index] 
-                    # new_effect = old_effect*(std_inputs[input_index]/std_outputs[output_index])
-                    # parameter_effects[input_index][step_index][output_index] = new_effect                
-                # elif(output_index<num_outputs):
-                    # #print "output_index<num_outputs"
-                    # parameter_effects[input_index][step_index][output_index] = 0.0
-                # #print "\tNEW: ", parameter_effects[input_index][step_index][output_index]
-                # output_index += 1
-    
-            # step_index += 1
-            
-        # input_index += 1
-        
-##########################################################
-##########################################################
-##########################################################
-
 class CropInfo:
   def __init__(self, crop_id, german_name, name, parameter_file, simulation_files_dir=None):
     self.crop_id = crop_id
