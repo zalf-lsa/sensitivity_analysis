@@ -38,9 +38,9 @@ crops = [1]
 output_list = [ #[ "dailyPrimYield",    "parameter_definitions_winter_wheat-primyield.csv"],
                 #[ "dailyAGB",        "parameter_definitions_winter_wheat-agb.csv"],
                 #[ "dailyAGB_N",      "parameter_definitions_winter_wheat-nagb.csv"],
-                [ "ETa",             "parameter_definitions_winter_wheat-eta.csv"]
-               # [ "soilMoist0_90cm", "parameter_definitions_winter_wheat-moist.csv"]
-               # [ "nmin0_90cm",      "parameter_definitions_winter_wheat-nmin.csv"]
+                #[ "ETa",             "parameter_definitions_winter_wheat-eta.csv"],
+                 [ "soilMoist0_90cm", "parameter_definitions_winter_wheat-moist.csv"]
+                #[ "nmin0_90cm",      "parameter_definitions_winter_wheat-nmin.csv"]
                 ]
 
 
@@ -49,8 +49,8 @@ output_names = [o[0] for o in output_list]
 
 output_id = sa_functions.getOutputId(output_names)
 
-#sites = ["Ascha", "Dornburg", "Ettlingen", "Guelzow","Werlte"]
-sites = ["Ascha", "Dornburg"]
+sites = ["Ettlingen", "Guelzow","Werlte"]
+#sites = ["Ascha", "Dornburg"]
 
 max_omega = 4096
 sample_size =32769 
