@@ -39,12 +39,12 @@ name = MPI.Get_processor_name()
 
 crops = [1]
 
-output_list = [ [ "dailyPrimYield",    "parameter_definitions_winter_wheat-primyield.csv"],
-                [ "dailyAGB",        "parameter_definitions_winter_wheat-agb.csv"],
-                [ "dailyAGB_N",      "parameter_definitions_winter_wheat-nagb.csv"],
-                [ "ETa",             "parameter_definitions_winter_wheat-eta.csv"],
-                [ "soilMoist0_90cm", "parameter_definitions_winter_wheat-moist.csv"],
-                [ "nmin0_90cm",      "parameter_definitions_winter_wheat-nmin.csv"]
+output_list = [ #[ "dailyPrimYield",    "parameter_definitions_winter_wheat-primyield.csv"],
+                [ "dailyAGB",        "parameter_definitions_winter_wheat-agb.csv"]
+                #[ "dailyAGB_N",      "parameter_definitions_winter_wheat-nagb.csv"],
+                #[ "ETa",             "parameter_definitions_winter_wheat-eta.csv"],
+                #[ "soilMoist0_90cm", "parameter_definitions_winter_wheat-moist.csv"],
+                #[ "nmin0_90cm",      "parameter_definitions_winter_wheat-nmin.csv"]
                 ]
 
 
@@ -52,8 +52,8 @@ output_names = [o[0] for o in output_list]
 output_id = sa_functions.getOutputId(output_names)
 print "Output_id:", output_id
 
-max_omega = 8192    
-sample_size = 50000
+max_omega = 4096    
+sample_size = 32769
 
 sites = ["Ascha", "Dornburg", "Ettlingen", "Guelzow","Werlte"]
 
@@ -81,7 +81,7 @@ def mpi_main(crop):
             crop_map = sa_functions.getCropsForSA()
             crop_info = crop_map[crop]
           
-            directory = datetime.datetime.today().strftime("runs/time/2016-02-08/" + str(output) + "/" + site)
+            directory = datetime.datetime.today().strftime("runs/time/2016-02-16a/" + str(output) + "/" + site)
             output_path = "runs/"
        
             # HERMES configuration
@@ -192,7 +192,7 @@ def mpi_main(crop):
                             tsi, first_order = get_TSi_Si(max_omega, parameter_index, max_param, values_for_day)
                             ######################################
                             
-                        print tsi, first_order
+                        #^print tsi, first_order
 
                         minimum_values.append(numpy.min(values_for_day))
                         maximum_values.append(numpy.max(values_for_day))
@@ -204,7 +204,6 @@ def mpi_main(crop):
                         #mean_tsi_values.append(tsi_mean)
                         #mean_si_values.append(si_mean)
 
-                    time_filename = directory + "/" + parameter.getName() + ".csv"
                     time_filehandle = open(time_filename, "w")
                     time_file = csv.writer(time_filehandle)
                     time_file.writerow(dates)

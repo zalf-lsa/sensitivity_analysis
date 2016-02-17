@@ -36,10 +36,10 @@ crops = [1]
 
 
 output_list = [ #[ "dailyPrimYield",    "parameter_definitions_winter_wheat-primyield.csv"],
-                #[ "dailyAGB",        "parameter_definitions_winter_wheat-agb.csv"],
+                [ "dailyAGB",        "parameter_definitions_winter_wheat-agb.csv"]
                 #[ "dailyAGB_N",      "parameter_definitions_winter_wheat-nagb.csv"],
                 #[ "ETa",             "parameter_definitions_winter_wheat-eta.csv"],
-                 [ "soilMoist0_90cm", "parameter_definitions_winter_wheat-moist.csv"]
+                # [ "soilMoist0_90cm", "parameter_definitions_winter_wheat-moist.csv"]
                 #[ "nmin0_90cm",      "parameter_definitions_winter_wheat-nmin.csv"]
                 ]
 
@@ -49,7 +49,7 @@ output_names = [o[0] for o in output_list]
 
 output_id = sa_functions.getOutputId(output_names)
 
-sites = ["Ettlingen", "Guelzow","Werlte"]
+sites = ["Ascha", "Dornburg", "Ettlingen", "Guelzow","Werlte"]
 #sites = ["Ascha", "Dornburg"]
 
 max_omega = 4096
@@ -73,7 +73,7 @@ def mpi_main(crop):
           crop_map = sa_functions.getCropsForSA()
           crop_info = crop_map[crop]
           
-          directory = datetime.datetime.today().strftime("runs/time/2016-02-08-a/" + str(output) + "/" + site)
+          directory = datetime.datetime.today().strftime("runs/time/2016-02-16/" + str(output) + "/" + site)
           output_path = "runs/"
        
           # HERMES configuration
@@ -104,7 +104,7 @@ def mpi_main(crop):
           # individual analysis for each parameter as proposed in Saltelli (2000)
           for parameter_index, parameter in enumerate(complete_list):
 
-              print 2, parameter_index, parameter
+              print rank, parameter_index, parameter
 
               dates = ["Date"]
               dev_stages = ["Stage"]
@@ -250,7 +250,7 @@ def initialise_parameter_value_list(complete_list, parameter_index):
     for i in range(max_param): 
         omegas.append(fast_lib.get_ts_frequencies(max_omega, i, max_param))
 
-    print omegas
+    #print omegas
     
     # initialisation of input signal range from -pi to pi
     step = (2*math.pi) / sample_size
