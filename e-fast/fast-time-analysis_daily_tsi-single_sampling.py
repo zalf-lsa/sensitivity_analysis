@@ -171,7 +171,12 @@ def mpi_main(crop):
                     tsi = 0.0
                     first_order= 0.0
                     if ( min(values_for_day) == 0 and max(values_for_day) == 0):
-                      pass
+                      minimum_values.append(0)
+                      maximum_values.append(0)
+                      mean_values.append(0)
+                      tsi_values.append(0)
+                      si_values.append(0)  
+                      
                     else: 
                       
                       omegas = fast_lib.get_ts_frequencies(max_omega, parameter_index, max_param)
