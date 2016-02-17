@@ -104,12 +104,18 @@ def mpi_main(crop):
 
             max_param = len(complete_list)
             result_ids = monica.sensitivityAnalysisResultIds() 
-            env = applySAValues(complete_list, nominal_list, env, crop)     
+            env = applySAValues(complete_list, nominal_list, env, crop)    
+
+            finished_result_files = getFilesInDirectory(directory)
 
             # individual analysis for each parameter as proposed in Saltelli (2000)
             for parameter_index, parameter in enumerate(complete_list):
 
                 print 2, parameter_index, parameter
+                
+                if (parameter.getName() + ".csv" in finished_result_files):
+                    print ("Skip parameter because it was already calculated.")
+                    continue
 
                 dates = ["Date"]
                 dev_stages = ["Stage"]
@@ -204,6 +210,7 @@ def mpi_main(crop):
                         #mean_tsi_values.append(tsi_mean)
                         #mean_si_values.append(si_mean)
 
+                    time_filename = directory + "/" + parameter.getName() + ".csv"
                     time_filehandle = open(time_filename, "w")
                     time_file = csv.writer(time_filehandle)
                     time_file.writerow(dates)
@@ -304,6 +311,21 @@ def initialise_parameter_value_list(complete_list, parameter_index):
 ##############################################################    
 ##############################################################
 ##############################################################
+
+""" 
+Returns a list with all files that are located in the 
+directory specified by 'path'
+"""
+def getFilesInDirectory(path):
+    directory_list = os.listdir(path)    
+    files = []
+    
+    for item in directory_list:
+        if os.path.isfile(path + '/' + item):
+            files.append(item)
+    
+    return (files)
+    
 
 # Call of main routine
 for crop in crops:
